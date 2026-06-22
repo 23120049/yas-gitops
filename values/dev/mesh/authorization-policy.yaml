@@ -1,0 +1,17 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: restrict-cart-access
+  namespace: dev
+spec:
+  selector:
+    matchLabels:
+      app: cart
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        # Tạm thời để tên SA như dự đoán. Sẽ verify lại khi app lên.
+        principals: 
+        - "cluster.local/ns/dev/sa/storefront-bff"
+        - "cluster.local/ns/dev/sa/order"
