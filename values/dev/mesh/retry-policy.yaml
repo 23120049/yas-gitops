@@ -1,0 +1,16 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: tax-retry-policy
+  namespace: dev
+spec:
+  hosts:
+  - "tax.dev.svc.cluster.local"
+  http:
+  - route:
+    - destination:
+        host: "tax.dev.svc.cluster.local"
+    retries:
+      attempts: 3
+      perTryTimeout: 2s
+      retryOn: gateway-error,connect-failure,refused-stream,5xx
