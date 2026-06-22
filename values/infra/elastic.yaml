@@ -1,0 +1,15 @@
+elasticsearch:
+  replicas: 1
+  nodeSelector:
+    kubernetes.io/hostname: "laptop-hh13kan9"
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "500m"
+    limits:
+      memory: "1Gi"
+      cpu: "1000m"
+kibana:
+  ingress:
+    className: nginx
+    hostname: kibana.yas.local.com
