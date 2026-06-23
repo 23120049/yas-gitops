@@ -1,0 +1,60 @@
+backoffice:
+  image:
+    tag: initial
+backoffice-bff:
+  image:
+    tag: initial
+cart:
+  image:
+    tag: initial
+customer:
+  image:
+    tag: initial
+inventory:
+  image:
+    tag: initial
+location:
+  image:
+    tag: initial
+media:
+  image:
+    tag: initial
+order:
+  image:
+    tag: initial
+payment:
+  image:
+    tag: initial
+payment-paypal:
+  image:
+    tag: initial
+product:
+  image:
+    tag: initial
+promotion:
+  image:
+    tag: initial
+rating:
+  image:
+    tag: initial
+recommendation:
+  image:
+    tag: initial
+sampledata:
+  image:
+    tag: initial
+search:
+  image:
+    tag: initial
+storefront:
+  image:
+    tag: initial
+storefront-bff:
+  image:
+    tag: initial
+tax:
+  image:
+    tag: initial
+webhook:
+  image:
+    tag: initial
