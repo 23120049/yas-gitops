@@ -1,0 +1,479 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: yas-configuration-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/23120049/yas-helm.git'
+    targetRevision: HEAD
+    path: charts/yas-configuration
+    helm:
+      values: |
+        applicationConfig:
+          springdoc:
+            oauthflow:
+              authorization-url: http://identity.yas.local.com/realms/Yas/protocol/openid-connect/auth
+              token-url: http://identity.yas.local.com/realms/Yas/protocol/openid-connect/token
+        mediaApplicationConfig:
+          yas:
+            publicUrl: http://dev-api.yas.local.com/media
+        paymentPaypalApplicationConfig:
+          yas:
+            public:
+              url: http://dev-storefront.yas.local.com/complete-payment
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    createNamespace: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: backoffice-bff-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/23120049/yas-helm.git'
+    targetRevision: HEAD
+    path: charts/backoffice-bff
+    helm:
+      values: |
+        backend:
+          ingress:
+            host: dev-backoffice.yas.local.com
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    createNamespace: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: backoffice-ui-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/23120049/yas-helm.git'
+    targetRevision: HEAD
+    path: charts/backoffice-ui
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    createNamespace: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: storefront-bff-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/23120049/yas-helm.git'
+    targetRevision: HEAD
+    path: charts/storefront-bff
+    helm:
+      values: |
+        backend:
+          ingress:
+            host: dev-storefront.yas.local.com
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    createNamespace: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: storefront-ui-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/23120049/yas-helm.git'
+    targetRevision: HEAD
+    path: charts/storefront-ui
+    helm:
+      values: |
+        ui:
+          extraEnvs:
+            - name: API_BASE_PATH
+              value: http://dev-storefront.yas.local.com/api
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    createNamespace: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: swagger-ui-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/23120049/yas-helm.git'
+    targetRevision: HEAD
+    path: charts/swagger-ui
+    helm:
+      values: |
+        urls: "[{ url: 'http://dev-api.yas.local.com/product/v3/api-docs', name: 'Product' }, { url: 'http://dev-api.yas.local.com/media/v3/api-docs', name: 'Media' }, { url: 'http://dev-api.yas.local.com/customer/v3/api-docs', name: 'Customer' }, { url: 'http://dev-api.yas.local.com/cart/v3/api-docs', name: 'Cart'}, { url: 'http://dev-api.yas.local.com/rating/v3/api-docs', name: 'Rating' }, { url: 'http://dev-api.yas.local.com/order/v3/api-docs', name: 'Order'}, { url: 'http://dev-api.yas.local.com/payment/v3/api-docs', name: 'Payment'}, { url: 'http://dev-api.yas.local.com/location/v3/api-docs', name: 'Location'}, { url: 'http://dev-api.yas.local.com/inventory/v3/api-docs', name: 'Inventory'}, { url: 'http://dev-api.yas.local.com/tax/v3/api-docs', name: 'Tax' }, { url: 'http://dev-api.yas.local.com/promotion/v3/api-docs', name: 'Promotion'}, { url: 'http://dev-api.yas.local.com/search/v3/api-docs', name: 'Search'}]"
+        ingress:
+          host: dev-api.yas.local.com
+          hosts:
+            - host: dev-api.yas.local.com
+              paths:
+                - path: /swagger-ui
+                  pathType: ImplementationSpecific
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    createNamespace: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cart-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/23120049/yas-helm.git'
+    targetRevision: HEAD
+    path: charts/cart
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    createNamespace: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: customer-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/23120049/yas-helm.git'
+    targetRevision: HEAD
+    path: charts/customer
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    createNamespace: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: inventory-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/23120049/yas-helm.git'
+    targetRevision: HEAD
+    path: charts/inventory
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    createNamespace: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: location-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/23120049/yas-helm.git'
+    targetRevision: HEAD
+    path: charts/location
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    createNamespace: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: media-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/23120049/yas-helm.git'
+    targetRevision: HEAD
+    path: charts/media
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    createNamespace: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: order-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/23120049/yas-helm.git'
+    targetRevision: HEAD
+    path: charts/order
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    createNamespace: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: payment-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/23120049/yas-helm.git'
+    targetRevision: HEAD
+    path: charts/payment
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    createNamespace: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: payment-paypal-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/23120049/yas-helm.git'
+    targetRevision: HEAD
+    path: charts/payment-paypal
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    createNamespace: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: product-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/23120049/yas-helm.git'
+    targetRevision: HEAD
+    path: charts/product
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    createNamespace: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promotion-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/23120049/yas-helm.git'
+    targetRevision: HEAD
+    path: charts/promotion
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    createNamespace: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: rating-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/23120049/yas-helm.git'
+    targetRevision: HEAD
+    path: charts/rating
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    createNamespace: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: recommendation-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/23120049/yas-helm.git'
+    targetRevision: HEAD
+    path: charts/recommendation
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    createNamespace: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: search-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/23120049/yas-helm.git'
+    targetRevision: HEAD
+    path: charts/search
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    createNamespace: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: tax-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/23120049/yas-helm.git'
+    targetRevision: HEAD
+    path: charts/tax
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    createNamespace: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: webhook-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/23120049/yas-helm.git'
+    targetRevision: HEAD
+    path: charts/webhook
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    createNamespace: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sampledata-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/23120049/yas-helm.git'
+    targetRevision: HEAD
+    path: charts/sampledata
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    createNamespace: true
