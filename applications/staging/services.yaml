@@ -173,7 +173,7 @@ spec:
       values: |
         backend:
           databaseName: cart_staging
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-staging
@@ -198,7 +198,7 @@ spec:
       values: |
         backend:
           databaseName: customer_staging
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-staging
@@ -223,7 +223,7 @@ spec:
       values: |
         backend:
           databaseName: inventory_staging
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-staging
@@ -248,7 +248,7 @@ spec:
       values: |
         backend:
           databaseName: location_staging
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-staging
@@ -273,7 +273,7 @@ spec:
       values: |
         backend:
           databaseName: media_staging
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-staging
@@ -298,7 +298,7 @@ spec:
       values: |
         backend:
           databaseName: order_staging
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-staging
@@ -323,7 +323,7 @@ spec:
       values: |
         backend:
           databaseName: payment_staging
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-staging
@@ -348,7 +348,7 @@ spec:
       values: |
         backend:
           databaseName: payment_paypal_staging
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-staging
@@ -373,7 +373,7 @@ spec:
       values: |
         backend:
           databaseName: product_staging
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-staging
@@ -398,7 +398,7 @@ spec:
       values: |
         backend:
           databaseName: promotion_staging
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-staging
@@ -423,7 +423,7 @@ spec:
       values: |
         backend:
           databaseName: rating_staging
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-staging
@@ -448,7 +448,7 @@ spec:
       values: |
         backend:
           databaseName: recommendation_staging
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-staging
@@ -473,7 +473,7 @@ spec:
       values: |
         backend:
           databaseName: search_staging
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-staging
@@ -498,7 +498,7 @@ spec:
       values: |
         backend:
           databaseName: tax_staging
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-staging
@@ -523,7 +523,7 @@ spec:
       values: |
         backend:
           databaseName: webhook_staging
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-staging
@@ -548,7 +548,7 @@ spec:
       values: |
         backend:
           databaseName: sampledata_staging
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-staging

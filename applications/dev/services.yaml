@@ -173,7 +173,7 @@ spec:
       values: |
         backend:
           databaseName: cart_dev
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
@@ -198,7 +198,7 @@ spec:
       values: |
         backend:
           databaseName: customer_dev
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
@@ -223,7 +223,7 @@ spec:
       values: |
         backend:
           databaseName: inventory_dev
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
@@ -248,7 +248,7 @@ spec:
       values: |
         backend:
           databaseName: location_dev
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
@@ -273,7 +273,7 @@ spec:
       values: |
         backend:
           databaseName: media_dev
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
@@ -298,7 +298,7 @@ spec:
       values: |
         backend:
           databaseName: order_dev
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
@@ -323,7 +323,7 @@ spec:
       values: |
         backend:
           databaseName: payment_dev
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
@@ -348,7 +348,7 @@ spec:
       values: |
         backend:
           databaseName: payment_paypal_dev
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
@@ -373,7 +373,7 @@ spec:
       values: |
         backend:
           databaseName: product_dev
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
@@ -398,7 +398,7 @@ spec:
       values: |
         backend:
           databaseName: promotion_dev
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
@@ -423,7 +423,7 @@ spec:
       values: |
         backend:
           databaseName: rating_dev
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
@@ -448,7 +448,7 @@ spec:
       values: |
         backend:
           databaseName: recommendation_dev
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
@@ -473,7 +473,7 @@ spec:
       values: |
         backend:
           databaseName: search_dev
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
@@ -498,7 +498,7 @@ spec:
       values: |
         backend:
           databaseName: tax_dev
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
@@ -523,7 +523,7 @@ spec:
       values: |
         backend:
           databaseName: webhook_dev
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
@@ -548,7 +548,7 @@ spec:
       values: |
         backend:
           databaseName: sampledata_dev
-          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+          databaseConnectionUrl: jdbc:postgresql://postgres.infra:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
