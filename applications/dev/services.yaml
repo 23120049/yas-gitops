@@ -169,6 +169,11 @@ spec:
     repoURL: 'https://github.com/23120049/yas-helm.git'
     targetRevision: HEAD
     path: charts/cart
+    helm:
+      values: |
+        backend:
+          databaseName: cart_dev
+          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
@@ -189,6 +194,11 @@ spec:
     repoURL: 'https://github.com/23120049/yas-helm.git'
     targetRevision: HEAD
     path: charts/customer
+    helm:
+      values: |
+        backend:
+          databaseName: customer_dev
+          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
@@ -209,6 +219,11 @@ spec:
     repoURL: 'https://github.com/23120049/yas-helm.git'
     targetRevision: HEAD
     path: charts/inventory
+    helm:
+      values: |
+        backend:
+          databaseName: inventory_dev
+          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
@@ -229,6 +244,11 @@ spec:
     repoURL: 'https://github.com/23120049/yas-helm.git'
     targetRevision: HEAD
     path: charts/location
+    helm:
+      values: |
+        backend:
+          databaseName: location_dev
+          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
@@ -249,6 +269,11 @@ spec:
     repoURL: 'https://github.com/23120049/yas-helm.git'
     targetRevision: HEAD
     path: charts/media
+    helm:
+      values: |
+        backend:
+          databaseName: media_dev
+          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
@@ -269,6 +294,11 @@ spec:
     repoURL: 'https://github.com/23120049/yas-helm.git'
     targetRevision: HEAD
     path: charts/order
+    helm:
+      values: |
+        backend:
+          databaseName: order_dev
+          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
@@ -289,6 +319,11 @@ spec:
     repoURL: 'https://github.com/23120049/yas-helm.git'
     targetRevision: HEAD
     path: charts/payment
+    helm:
+      values: |
+        backend:
+          databaseName: payment_dev
+          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
@@ -309,6 +344,11 @@ spec:
     repoURL: 'https://github.com/23120049/yas-helm.git'
     targetRevision: HEAD
     path: charts/payment-paypal
+    helm:
+      values: |
+        backend:
+          databaseName: payment_paypal_dev
+          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
@@ -329,6 +369,11 @@ spec:
     repoURL: 'https://github.com/23120049/yas-helm.git'
     targetRevision: HEAD
     path: charts/product
+    helm:
+      values: |
+        backend:
+          databaseName: product_dev
+          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
@@ -349,6 +394,11 @@ spec:
     repoURL: 'https://github.com/23120049/yas-helm.git'
     targetRevision: HEAD
     path: charts/promotion
+    helm:
+      values: |
+        backend:
+          databaseName: promotion_dev
+          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
@@ -369,6 +419,11 @@ spec:
     repoURL: 'https://github.com/23120049/yas-helm.git'
     targetRevision: HEAD
     path: charts/rating
+    helm:
+      values: |
+        backend:
+          databaseName: rating_dev
+          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
@@ -389,6 +444,11 @@ spec:
     repoURL: 'https://github.com/23120049/yas-helm.git'
     targetRevision: HEAD
     path: charts/recommendation
+    helm:
+      values: |
+        backend:
+          databaseName: recommendation_dev
+          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
@@ -409,6 +469,11 @@ spec:
     repoURL: 'https://github.com/23120049/yas-helm.git'
     targetRevision: HEAD
     path: charts/search
+    helm:
+      values: |
+        backend:
+          databaseName: search_dev
+          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
@@ -429,6 +494,11 @@ spec:
     repoURL: 'https://github.com/23120049/yas-helm.git'
     targetRevision: HEAD
     path: charts/tax
+    helm:
+      values: |
+        backend:
+          databaseName: tax_dev
+          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
@@ -449,6 +519,11 @@ spec:
     repoURL: 'https://github.com/23120049/yas-helm.git'
     targetRevision: HEAD
     path: charts/webhook
+    helm:
+      values: |
+        backend:
+          databaseName: webhook_dev
+          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
@@ -469,6 +544,31 @@ spec:
     repoURL: 'https://github.com/23120049/yas-helm.git'
     targetRevision: HEAD
     path: charts/sampledata
+    helm:
+      values: |
+        backend:
+          databaseName: sampledata_dev
+          databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    createNamespace: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: yas-istio-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/23120049/yas-gitops.git'
+    targetRevision: HEAD
+    path: istio/dev
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: yas-dev
