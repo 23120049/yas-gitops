@@ -1,19 +1,25 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: postgresql
-  namespace: argocd
-spec:
-  project: default
-  source:
-    repoURL: 'https://github.com/23120049/yas-helm.git'
-    targetRevision: HEAD
-    path: charts/postgresql
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: postgres
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    createNamespace: true
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: postgresql
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: 'https://github.com/23120049/yas-helm.git'
+      targetRevision: HEAD
+      path: deploy/postgres/postgresql
+      helm:
+        valueFiles:
+          - $values/values/infra/postgres.yaml
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: postgres
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    createNamespace: true

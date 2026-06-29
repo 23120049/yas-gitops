@@ -1,19 +1,19 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: kafka
-  namespace: argocd
-spec:
-  project: default
-  source:
-    repoURL: 'https://github.com/23120049/yas-helm.git'
-    targetRevision: HEAD
-    path: charts/kafka-cluster
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: kafka
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    createNamespace: true
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kafka
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/23120049/yas-helm.git'
+    targetRevision: HEAD
+    path: deploy/kafka/kafka-cluster
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: kafka
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    createNamespace: true
