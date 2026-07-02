@@ -83,4 +83,3 @@ ui:
     image:
       repository: ghcr.io/23120049/yas-backoffice
       tag: latest
-cart: latest
