@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: 'https://github.com/23120049/yas-helm.git'
-    targetRevision: fix/argocd-kafka
+    targetRevision: fix/kafka-strimzi-v1-infra
     path: deploy/kafka/kafka-cluster
 
   destination:
