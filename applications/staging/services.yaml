@@ -1,682 +1,698 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: yas-configuration-staging
-  namespace: argocd
-spec:
-  project: default
-  source:
-    repoURL: 'https://github.com/23120049/yas-helm.git'
-    targetRevision: HEAD
-    path: charts/yas-configuration
-    helm:
-      values: |
-        applicationConfig:
-          springdoc:
-            oauthflow:
-              authorization-url: http://identity.yas.local.com/realms/Yas/protocol/openid-connect/auth
-              token-url: http://identity.yas.local.com/realms/Yas/protocol/openid-connect/token
-        mediaApplicationConfig:
-          yas:
-            publicUrl: http://staging-api.yas.local.com/media
-        paymentPaypalApplicationConfig:
-          yas:
-            public:
-              url: http://staging-storefront.yas.local.com/complete-payment
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-staging
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: yas-configuration-staging
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/23120049/yas-helm.git'
+    targetRevision: HEAD
+    path: charts/yas-configuration
+    helm:
+      values: |
+        applicationConfig:
+          springdoc:
+            oauthflow:
+              authorization-url: http://identity.yas.local.com/realms/Yas/protocol/openid-connect/auth
+              token-url: http://identity.yas.local.com/realms/Yas/protocol/openid-connect/token
+        mediaApplicationConfig:
+          yas:
+            publicUrl: http://staging-api.yas.local.com/media
+        paymentPaypalApplicationConfig:
+          yas:
+            public:
+              url: http://staging-storefront.yas.local.com/complete-payment
+        sampledataApplicationConfig:
+          spring:
+            datasource:
+              product:
+                url: jdbc:postgresql://postgresql.infra:5432/product_staging
+              media:
+                url: jdbc:postgresql://postgresql.infra:5432/media_staging
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: backoffice-bff-staging
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/backoffice-bff
-      helm:
-        valueFiles:
-          - $values/values/staging/dynamic-tags/backoffice-bff.yaml
-        values: |
-          backend:
-            ingress:
-              host: staging-backoffice.yas.local.com
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-staging
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: backoffice-bff-staging
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: 'https://github.com/23120049/yas-helm.git'
+      targetRevision: HEAD
+      path: charts/backoffice-bff
+      helm:
+        valueFiles:
+          - $values/values/staging/dynamic-tags/backoffice-bff.yaml
+        values: |
+          backend:
+            ingress:
+              host: staging-backoffice.yas.local.com
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: backoffice-ui-staging
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/backoffice-ui
-      helm:
-        valueFiles:
-          - $values/values/staging/dynamic-tags/backoffice.yaml
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-staging
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: backoffice-ui-staging
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: 'https://github.com/23120049/yas-helm.git'
+      targetRevision: HEAD
+      path: charts/backoffice-ui
+      helm:
+        valueFiles:
+          - $values/values/staging/dynamic-tags/backoffice.yaml
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: storefront-bff-staging
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/storefront-bff
-      helm:
-        valueFiles:
-          - $values/values/staging/dynamic-tags/storefront-bff.yaml
-        values: |
-          backend:
-            ingress:
-              host: staging-storefront.yas.local.com
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-staging
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: storefront-bff-staging
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: 'https://github.com/23120049/yas-helm.git'
+      targetRevision: HEAD
+      path: charts/storefront-bff
+      helm:
+        valueFiles:
+          - $values/values/staging/dynamic-tags/storefront-bff.yaml
+        values: |
+          backend:
+            ingress:
+              host: staging-storefront.yas.local.com
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: storefront-ui-staging
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/storefront-ui
-      helm:
-        valueFiles:
-          - $values/values/staging/dynamic-tags/storefront.yaml
-        values: |
-          ui:
-            extraEnvs:
-              - name: API_BASE_PATH
-                value: http://staging-storefront.yas.local.com/api
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-staging
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: storefront-ui-staging
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: 'https://github.com/23120049/yas-helm.git'
+      targetRevision: HEAD
+      path: charts/storefront-ui
+      helm:
+        valueFiles:
+          - $values/values/staging/dynamic-tags/storefront.yaml
+        values: |
+          ui:
+            extraEnvs:
+              - name: API_BASE_PATH
+                value: http://staging-storefront.yas.local.com/api
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: swagger-ui-staging
-  namespace: argocd
-spec:
-  project: default
-  source:
-    repoURL: 'https://github.com/23120049/yas-helm.git'
-    targetRevision: HEAD
-    path: charts/swagger-ui
-    helm:
-      values: |
-        urls: "[{ url: 'http://staging-api.yas.local.com/product/v3/api-docs', name: 'Product' }, { url: 'http://staging-api.yas.local.com/media/v3/api-docs', name: 'Media' }, { url: 'http://staging-api.yas.local.com/customer/v3/api-docs', name: 'Customer' }, { url: 'http://staging-api.yas.local.com/cart/v3/api-docs', name: 'Cart' }, { url: 'http://staging-api.yas.local.com/rating/v3/api-docs', name: 'Rating' }, { url: 'http://staging-api.yas.local.com/order/v3/api-docs', name: 'Order' }, { url: 'http://staging-api.yas.local.com/payment/v3/api-docs', name: 'Payment' }, { url: 'http://staging-api.yas.local.com/location/v3/api-docs', name: 'Location' }, { url: 'http://staging-api.yas.local.com/inventory/v3/api-docs', name: 'Inventory' }, { url: 'http://staging-api.yas.local.com/tax/v3/api-docs', name: 'Tax' }, { url: 'http://staging-api.yas.local.com/promotion/v3/api-docs', name: 'Promotion' }, { url: 'http://staging-api.yas.local.com/search/v3/api-docs', name: 'Search' }]"
-        ingress:
-          host: staging-api.yas.local.com
-          hosts:
-            - host: staging-api.yas.local.com
-              paths:
-                - path: /swagger-ui
-                  pathType: ImplementationSpecific
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-staging
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: swagger-ui-staging
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/23120049/yas-helm.git'
+    targetRevision: HEAD
+    path: charts/swagger-ui
+    helm:
+      values: |
+        urls: "[{ url: 'http://staging-api.yas.local.com/product/v3/api-docs', name: 'Product' }, { url: 'http://staging-api.yas.local.com/media/v3/api-docs', name: 'Media' }, { url: 'http://staging-api.yas.local.com/customer/v3/api-docs', name: 'Customer' }, { url: 'http://staging-api.yas.local.com/cart/v3/api-docs', name: 'Cart' }, { url: 'http://staging-api.yas.local.com/rating/v3/api-docs', name: 'Rating' }, { url: 'http://staging-api.yas.local.com/order/v3/api-docs', name: 'Order' }, { url: 'http://staging-api.yas.local.com/payment/v3/api-docs', name: 'Payment' }, { url: 'http://staging-api.yas.local.com/location/v3/api-docs', name: 'Location' }, { url: 'http://staging-api.yas.local.com/inventory/v3/api-docs', name: 'Inventory' }, { url: 'http://staging-api.yas.local.com/tax/v3/api-docs', name: 'Tax' }, { url: 'http://staging-api.yas.local.com/promotion/v3/api-docs', name: 'Promotion' }, { url: 'http://staging-api.yas.local.com/search/v3/api-docs', name: 'Search' }]"
+        ingress:
+          host: staging-api.yas.local.com
+          hosts:
+            - host: staging-api.yas.local.com
+              paths:
+                - path: /swagger-ui
+                  pathType: ImplementationSpecific
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: cart-staging
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/cart
-      helm:
-        valueFiles:
-          - $values/values/staging/dynamic-tags/cart.yaml
-        values: |
-          backend:
-            databaseName: cart_staging
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-staging
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cart-staging
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: 'https://github.com/23120049/yas-helm.git'
+      targetRevision: HEAD
+      path: charts/cart
+      helm:
+        valueFiles:
+          - $values/values/staging/dynamic-tags/cart.yaml
+        values: |
+          backend:
+            databaseName: cart_staging
+            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: customer-staging
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/customer
-      helm:
-        valueFiles:
-          - $values/values/staging/dynamic-tags/customer.yaml
-        values: |
-          backend:
-            databaseName: customer_staging
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-staging
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: customer-staging
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: 'https://github.com/23120049/yas-helm.git'
+      targetRevision: HEAD
+      path: charts/customer
+      helm:
+        valueFiles:
+          - $values/values/staging/dynamic-tags/customer.yaml
+        values: |
+          backend:
+            databaseName: customer_staging
+            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: inventory-staging
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/inventory
-      helm:
-        valueFiles:
-          - $values/values/staging/dynamic-tags/inventory.yaml
-        values: |
-          backend:
-            databaseName: inventory_staging
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-staging
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: inventory-staging
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: 'https://github.com/23120049/yas-helm.git'
+      targetRevision: HEAD
+      path: charts/inventory
+      helm:
+        valueFiles:
+          - $values/values/staging/dynamic-tags/inventory.yaml
+        values: |
+          backend:
+            databaseName: inventory_staging
+            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: location-staging
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/location
-      helm:
-        valueFiles:
-          - $values/values/staging/dynamic-tags/location.yaml
-        values: |
-          backend:
-            databaseName: location_staging
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-staging
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: location-staging
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: 'https://github.com/23120049/yas-helm.git'
+      targetRevision: HEAD
+      path: charts/location
+      helm:
+        valueFiles:
+          - $values/values/staging/dynamic-tags/location.yaml
+        values: |
+          backend:
+            databaseName: location_staging
+            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: media-staging
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/media
-      helm:
-        valueFiles:
-          - $values/values/staging/dynamic-tags/media.yaml
-        values: |
-          backend:
-            databaseName: media_staging
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-staging
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: media-staging
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: 'https://github.com/23120049/yas-helm.git'
+      targetRevision: HEAD
+      path: charts/media
+      helm:
+        valueFiles:
+          - $values/values/staging/dynamic-tags/media.yaml
+        values: |
+          backend:
+            databaseName: media_staging
+            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: order-staging
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/order
-      helm:
-        valueFiles:
-          - $values/values/staging/dynamic-tags/order.yaml
-        values: |
-          backend:
-            databaseName: order_staging
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-staging
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: order-staging
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: 'https://github.com/23120049/yas-helm.git'
+      targetRevision: HEAD
+      path: charts/order
+      helm:
+        valueFiles:
+          - $values/values/staging/dynamic-tags/order.yaml
+        values: |
+          backend:
+            databaseName: order_staging
+            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: payment-staging
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/payment
-      helm:
-        valueFiles:
-          - $values/values/staging/dynamic-tags/payment.yaml
-        values: |
-          backend:
-            databaseName: payment_staging
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-staging
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: payment-staging
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: 'https://github.com/23120049/yas-helm.git'
+      targetRevision: HEAD
+      path: charts/payment
+      helm:
+        valueFiles:
+          - $values/values/staging/dynamic-tags/payment.yaml
+        values: |
+          backend:
+            databaseName: payment_staging
+            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: payment-paypal-staging
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/payment-paypal
-      helm:
-        valueFiles:
-          - $values/values/staging/dynamic-tags/payment-paypal.yaml
-        values: |
-          backend:
-            databaseName: payment_paypal_staging
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-staging
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: payment-paypal-staging
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: 'https://github.com/23120049/yas-helm.git'
+      targetRevision: HEAD
+      path: charts/payment-paypal
+      helm:
+        valueFiles:
+          - $values/values/staging/dynamic-tags/payment-paypal.yaml
+        values: |
+          backend:
+            databaseName: payment_paypal_staging
+            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: product-staging
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/product
-      helm:
-        valueFiles:
-          - $values/values/staging/dynamic-tags/product.yaml
-        values: |
-          backend:
-            databaseName: product_staging
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-staging
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: product-staging
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: 'https://github.com/23120049/yas-helm.git'
+      targetRevision: HEAD
+      path: charts/product
+      helm:
+        valueFiles:
+          - $values/values/staging/dynamic-tags/product.yaml
+        values: |
+          backend:
+            databaseName: product_staging
+            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: promotion-staging
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/promotion
-      helm:
-        valueFiles:
-          - $values/values/staging/dynamic-tags/promotion.yaml
-        values: |
-          backend:
-            databaseName: promotion_staging
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-staging
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: promotion-staging
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: 'https://github.com/23120049/yas-helm.git'
+      targetRevision: HEAD
+      path: charts/promotion
+      helm:
+        valueFiles:
+          - $values/values/staging/dynamic-tags/promotion.yaml
+        values: |
+          backend:
+            databaseName: promotion_staging
+            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: rating-staging
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/rating
-      helm:
-        valueFiles:
-          - $values/values/staging/dynamic-tags/rating.yaml
-        values: |
-          backend:
-            databaseName: rating_staging
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-staging
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: rating-staging
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: 'https://github.com/23120049/yas-helm.git'
+      targetRevision: HEAD
+      path: charts/rating
+      helm:
+        valueFiles:
+          - $values/values/staging/dynamic-tags/rating.yaml
+        values: |
+          backend:
+            databaseName: rating_staging
+            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: recommendation-staging
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/recommendation
-      helm:
-        valueFiles:
-          - $values/values/staging/dynamic-tags/recommendation.yaml
-        values: |
-          backend:
-            databaseName: recommendation_staging
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-staging
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: recommendation-staging
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: 'https://github.com/23120049/yas-helm.git'
+      targetRevision: HEAD
+      path: charts/recommendation
+      helm:
+        valueFiles:
+          - $values/values/staging/dynamic-tags/recommendation.yaml
+        values: |
+          backend:
+            databaseName: recommendation_staging
+            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+            extraEnvs:
+              - name: PRODUCT_TOPIC_NAME
+                value: dbproductstaging.public.product
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: search-staging
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/search
-      helm:
-        valueFiles:
-          - $values/values/staging/dynamic-tags/search.yaml
-        values: |
-          backend:
-            databaseName: search_staging
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-staging
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: search-staging
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: 'https://github.com/23120049/yas-helm.git'
+      targetRevision: HEAD
+      path: charts/search
+      helm:
+        valueFiles:
+          - $values/values/staging/dynamic-tags/search.yaml
+        values: |
+          backend:
+            databaseName: search_staging
+            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+            extraEnvs:
+              - name: PRODUCT_TOPIC_NAME
+                value: dbproductstaging.public.product
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: tax-staging
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/tax
-      helm:
-        valueFiles:
-          - $values/values/staging/dynamic-tags/tax.yaml
-        values: |
-          backend:
-            databaseName: tax_staging
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-staging
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: tax-staging
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: 'https://github.com/23120049/yas-helm.git'
+      targetRevision: HEAD
+      path: charts/tax
+      helm:
+        valueFiles:
+          - $values/values/staging/dynamic-tags/tax.yaml
+        values: |
+          backend:
+            databaseName: tax_staging
+            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: webhook-staging
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/webhook
-      helm:
-        valueFiles:
-          - $values/values/staging/dynamic-tags/webhook.yaml
-        values: |
-          backend:
-            databaseName: webhook_staging
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-staging
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: webhook-staging
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: 'https://github.com/23120049/yas-helm.git'
+      targetRevision: HEAD
+      path: charts/webhook
+      helm:
+        valueFiles:
+          - $values/values/staging/dynamic-tags/webhook.yaml
+        values: |
+          backend:
+            databaseName: webhook_staging
+            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+            extraEnvs:
+              - name: WEBHOOK_INTEGRATION_KAFKA_PRODUCT_TOPIC_NAME
+                value: dbproductstaging.public.product
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: sampledata-staging
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/sampledata
-      helm:
-        valueFiles:
-          - $values/values/staging/dynamic-tags/sampledata.yaml
-        values: |
-          backend:
-            databaseName: sampledata_staging
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-staging
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sampledata-staging
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: 'https://github.com/23120049/yas-helm.git'
+      targetRevision: HEAD
+      path: charts/sampledata
+      helm:
+        valueFiles:
+          - $values/values/staging/dynamic-tags/sampledata.yaml
+        values: |
+          backend:
+            databaseName: sampledata_staging
+            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
-      - CreateNamespace=true
+      - CreateNamespace=true

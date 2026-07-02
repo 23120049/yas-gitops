@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: postgres
+  name: infra
   annotations:
     argocd.argoproj.io/sync-wave: "0"
 ---
@@ -9,7 +9,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: postgres-init-script
-  namespace: postgres
+  namespace: infra
   annotations:
     argocd.argoproj.io/sync-wave: "1"
 data:
@@ -60,7 +60,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: postgres-init-job
-  namespace: postgres
+  namespace: infra
   annotations:
     argocd.argoproj.io/sync-wave: "2"
 spec:
