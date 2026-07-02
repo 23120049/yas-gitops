@@ -1,6 +1,6 @@
-# Image tags configuration for YAS Helm charts
-# Workflows update this file for auditing and update per-service files used by Argo CD.
-# 
+# Image tags configuration for YAS Helm charts
+# Workflows update this file for auditing and update per-service files used by Argo CD.
+# 
 backend:
   cart:
     image:

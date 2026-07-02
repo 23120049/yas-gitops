@@ -1,4 +1,4 @@
-backend:
-  image:
-    repository: ghcr.io/23120049/yas-sampledata
-    tag: latest
+backend:
+  image:
+    repository: ghcr.io/23120049/yas-sampledata
+    tag: latest
