@@ -1,4 +1,4 @@
 backend:
   image:
     repository: ghcr.io/23120049/yas-media
-    tag: a6bf5759de72bd9dee5f74a3d81ec038ba872cfe
+    tag: 02bfd0762694c6a3419c4893f417983724a98c23
