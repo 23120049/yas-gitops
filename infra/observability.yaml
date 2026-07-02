@@ -1,41 +1,41 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: observability
-  namespace: argocd
-spec:
-  project: default
-  source:
-    repoURL: 'https://github.com/23120049/yas-helm.git'
-    targetRevision: HEAD
-    path: deploy/observability/opentelemetry
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: observability
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: observability
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/23120049/yas-helm.git'
+    targetRevision: HEAD
+    path: deploy/observability/opentelemetry
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: observability
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: grafana
-  namespace: argocd
-spec:
-  project: default
-  source:
-    repoURL: 'https://github.com/23120049/yas-helm.git'
-    targetRevision: HEAD
-    path: deploy/observability/grafana
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: observability
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/23120049/yas-helm.git'
+    targetRevision: HEAD
+    path: deploy/observability/grafana
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: observability
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
-      - CreateNamespace=true
+      - CreateNamespace=true

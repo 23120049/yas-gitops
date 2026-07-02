@@ -1,0 +1,19 @@
+# YAS Microservices Configuration - Hosts File
+# Point to the k3s cluster Tailscale IP: 100.108.98.79
+
+# --- Dev Environment ---
+100.108.98.79   dev-api.yas.local.com
+100.108.98.79   dev-backoffice.yas.local.com
+100.108.98.79   dev-storefront.yas.local.com
+
+# --- Staging Environment ---
+100.108.98.79   staging-api.yas.local.com
+100.108.98.79   staging-backoffice.yas.local.com
+100.108.98.79   staging-storefront.yas.local.com
+
+# --- Shared Infrastructure ---
+100.108.98.79   identity.yas.local.com
+100.108.98.79   pgadmin.yas.local.com
+100.108.98.79   grafana.yas.local.com
+100.108.98.79   kibana.yas.local.com
+100.108.98.79   akhq.yas.local.com
