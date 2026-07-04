@@ -1,55 +1,13 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: yas-configuration-staging
-  namespace: argocd
-spec:
-  project: default
-  source:
-    repoURL: 'https://github.com/23120049/yas-helm.git'
-    targetRevision: HEAD
-    path: charts/yas-configuration
-    helm:
-      values: |
-        applicationConfig:
-          springdoc:
-            oauthflow:
-              authorization-url: http://identity.yas.local.com/realms/Yas/protocol/openid-connect/auth
-              token-url: http://identity.yas.local.com/realms/Yas/protocol/openid-connect/token
-        mediaApplicationConfig:
-          yas:
-            publicUrl: http://staging-api.yas.local.com/media
-        paymentPaypalApplicationConfig:
-          yas:
-            public:
-              url: http://staging-storefront.yas.local.com/complete-payment
-        sampledataApplicationConfig:
-          spring:
-            datasource:
-              product:
-                url: jdbc:postgresql://postgresql.infra:5432/product_staging
-              media:
-                url: jdbc:postgresql://postgresql.infra:5432/media_staging
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: staging
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
   name: backoffice-bff-staging
   namespace: argocd
 spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: main
       path: charts/backoffice-bff
       helm:
         valueFiles:
@@ -59,7 +17,7 @@ spec:
             ingress:
               host: staging-backoffice.yas.local.com
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: main
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -80,13 +38,13 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: main
       path: charts/backoffice-ui
       helm:
         valueFiles:
           - $values/values/staging/dynamic-tags/backoffice.yaml
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: main
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -107,7 +65,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: main
       path: charts/storefront-bff
       helm:
         valueFiles:
@@ -117,7 +75,7 @@ spec:
             ingress:
               host: staging-storefront.yas.local.com
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: main
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -138,7 +96,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: main
       path: charts/storefront-ui
       helm:
         valueFiles:
@@ -149,7 +107,7 @@ spec:
               - name: API_BASE_PATH
                 value: http://staging-storefront.yas.local.com/api
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: main
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -170,7 +128,7 @@ spec:
   project: default
   source:
     repoURL: 'https://github.com/23120049/yas-helm.git'
-    targetRevision: HEAD
+    targetRevision: main
     path: charts/swagger-ui
     helm:
       values: |
@@ -201,7 +159,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: main
       path: charts/cart
       helm:
         valueFiles:
@@ -211,7 +169,7 @@ spec:
             databaseName: cart_staging
             databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: main
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -232,7 +190,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: main
       path: charts/customer
       helm:
         valueFiles:
@@ -242,7 +200,7 @@ spec:
             databaseName: customer_staging
             databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: main
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -263,7 +221,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: main
       path: charts/inventory
       helm:
         valueFiles:
@@ -273,7 +231,7 @@ spec:
             databaseName: inventory_staging
             databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: main
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -294,7 +252,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: main
       path: charts/location
       helm:
         valueFiles:
@@ -304,7 +262,7 @@ spec:
             databaseName: location_staging
             databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: main
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -325,7 +283,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: main
       path: charts/media
       helm:
         valueFiles:
@@ -335,7 +293,7 @@ spec:
             databaseName: media_staging
             databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: main
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -356,7 +314,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: main
       path: charts/order
       helm:
         valueFiles:
@@ -366,7 +324,7 @@ spec:
             databaseName: order_staging
             databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: main
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -387,7 +345,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: main
       path: charts/payment
       helm:
         valueFiles:
@@ -397,7 +355,7 @@ spec:
             databaseName: payment_staging
             databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: main
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -418,7 +376,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: main
       path: charts/payment-paypal
       helm:
         valueFiles:
@@ -428,7 +386,7 @@ spec:
             databaseName: payment_paypal_staging
             databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: main
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -449,7 +407,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: main
       path: charts/product
       helm:
         valueFiles:
@@ -459,7 +417,7 @@ spec:
             databaseName: product_staging
             databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: main
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -480,7 +438,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: main
       path: charts/promotion
       helm:
         valueFiles:
@@ -490,7 +448,7 @@ spec:
             databaseName: promotion_staging
             databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: main
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -511,7 +469,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: main
       path: charts/rating
       helm:
         valueFiles:
@@ -521,7 +479,7 @@ spec:
             databaseName: rating_staging
             databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: main
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -542,7 +500,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: main
       path: charts/recommendation
       helm:
         valueFiles:
@@ -555,7 +513,7 @@ spec:
               - name: PRODUCT_TOPIC_NAME
                 value: dbproductstaging.public.product
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: main
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -576,7 +534,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: main
       path: charts/search
       helm:
         valueFiles:
@@ -589,7 +547,7 @@ spec:
               - name: PRODUCT_TOPIC_NAME
                 value: dbproductstaging.public.product
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: main
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -610,7 +568,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: main
       path: charts/tax
       helm:
         valueFiles:
@@ -620,7 +578,7 @@ spec:
             databaseName: tax_staging
             databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: main
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -641,7 +599,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: main
       path: charts/webhook
       helm:
         valueFiles:
@@ -654,7 +612,7 @@ spec:
               - name: WEBHOOK_INTEGRATION_KAFKA_PRODUCT_TOPIC_NAME
                 value: dbproductstaging.public.product
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: main
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -675,7 +633,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: main
       path: charts/sampledata
       helm:
         valueFiles:
@@ -685,7 +643,7 @@ spec:
             databaseName: sampledata_staging
             databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: main
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'

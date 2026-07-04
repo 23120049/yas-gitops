@@ -138,7 +138,7 @@ Thay `100.108.98.79` bằng IP Tailscale của node k3s nếu IP thay đổi.
 100.108.98.79   pgoperator.yas.local.com
 ```
 
-## Argo CD bootstrap
+## One-command bootstrap
 
 Điều kiện trước khi chạy:
 
@@ -148,21 +148,37 @@ Thay `100.108.98.79` bằng IP Tailscale của node k3s nếu IP thay đổi.
 - Argo CD có quyền đọc repo `23120049/yas-gitops` và `23120049/yas-helm`.
 - Ingress controller đã sẵn sàng trên cluster.
 
-Bootstrap:
+Commit and push the `yas-gitops` and `yas-helm` state first, then run one command from a Bash shell:
 
 ```bash
-kubectl apply -f bootstrap/root.yaml
+./scripts/bootstrap.sh
 ```
 
-Trích từ file `bootstrap/root.yaml`, Argo CD quản lý 5 root app:
+This is the GitOps equivalent of the old YAS deployment scripts. It is idempotent and stops at the first unhealthy phase instead of launching dependent workloads prematurely:
 
-```yaml
-path: infra
-path: applications/dev
-path: applications/staging
-path: istio/dev
-path: istio/staging
+```text
+prerequisites and Argo CD
+  -> operators
+  -> infrastructure services
+  -> PostgreSQL database initialization
+  -> shared dev/staging configuration
+  -> dev/staging workloads
+  -> Istio routing policies
 ```
+
+The timeout for each gate defaults to 15 minutes. Override it with `BOOTSTRAP_TIMEOUT=30m`. When prerequisites are already installed, use `SKIP_PREREQUISITES=true ./scripts/bootstrap.sh`.
+
+Infrastructure gating checks both Argo CD health and runtime readiness. PostgreSQL, Redis, Kafka, Kafka Connect, Elasticsearch, Kibana, Keycloak, pgAdmin, and ZooKeeper must report ready before database initialization starts. The configuration phase must then create the shared ConfigMap and credential Secret in both application namespaces before any workload Application is enabled.
+
+Do not use `kubectl apply -f bootstrap/root.yaml` for a new deployment. That legacy manifest starts all roots concurrently and bypasses readiness gates.
+
+If the legacy roots are already installed, migrate them in the same command:
+
+```bash
+MIGRATE_LEGACY_ROOTS=true ./scripts/bootstrap.sh
+```
+
+This deletes the old Argo CD parent and child `Application` objects with orphan propagation, preserving their Kubernetes workloads. The phased roots then adopt the desired state in order. Without this flag, bootstrap refuses to continue while a legacy root exists.
 
 Sau bootstrap, kiểm tra:
 
@@ -287,8 +303,8 @@ kubectl get destinationrule -A
 4. Cập nhật hosts file theo block ở trên.
 5. Cài Argo CD vào k3s.
 6. Add repo credentials cho `yas-gitops` và `yas-helm` trong Argo CD nếu repo private.
-7. Chạy `kubectl apply -f bootstrap/root.yaml` trong repo `yas-gitops`.
-8. Chờ infra ready trước, đặc biệt PostgreSQL, Keycloak, Kafka, Elasticsearch.
+7. Chạy `./scripts/bootstrap.sh` trong repo `yas-gitops`.
+8. Để script kiểm tra từng readiness gate; sửa phase bị lỗi rồi chạy lại cùng command.
 9. Push một thay đổi nhỏ vào service trên `yas/main` để kiểm tra dev auto deploy.
 10. Tạo GitHub Release trên repo `yas` để kiểm tra staging promotion.
 

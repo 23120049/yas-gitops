@@ -1,22 +1,25 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: pgadmin
+  name: redis
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
 spec:
   project: default
   sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: main
-      path: deploy/postgres/pgadmin
+    - repoURL: registry-1.docker.io/bitnamicharts
+      chart: redis
+      targetRevision: "27.0.13"
       helm:
+        releaseName: redis
         valueFiles:
-          - $values/values/infra/pgadmin.yaml
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
+          - $values/values/infra/redis.yaml
+    - repoURL: https://github.com/23120049/yas-gitops.git
       targetRevision: main
       ref: values
   destination:
-    server: 'https://kubernetes.default.svc'
+    server: https://kubernetes.default.svc
     namespace: infra
   syncPolicy:
     automated:

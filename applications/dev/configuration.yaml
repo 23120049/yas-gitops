@@ -1,0 +1,41 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: yas-configuration-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/23120049/yas-helm.git'
+    targetRevision: main
+    path: charts/yas-configuration
+    helm:
+      values: |
+        applicationConfig:
+          springdoc:
+            oauthflow:
+              authorization-url: http://identity.yas.local.com/realms/Yas/protocol/openid-connect/auth
+              token-url: http://identity.yas.local.com/realms/Yas/protocol/openid-connect/token
+        mediaApplicationConfig:
+          yas:
+            publicUrl: http://dev-api.yas.local.com/media
+        paymentPaypalApplicationConfig:
+          yas:
+            public:
+              url: http://dev-storefront.yas.local.com/complete-payment
+        sampledataApplicationConfig:
+          spring:
+            datasource:
+              product:
+                url: jdbc:postgresql://postgresql.infra:5432/product_dev
+              media:
+                url: jdbc:postgresql://postgresql.infra:5432/media_dev
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

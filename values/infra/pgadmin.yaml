@@ -1,0 +1,7 @@
+pgadmin:
+  user: admin@yas.com
+  password: admin
+persistence:
+  enabled: true
+  storageClass: local-path
+  size: 2Gi

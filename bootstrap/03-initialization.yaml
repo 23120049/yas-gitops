@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: yas-bootstrap-initialization
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/23120049/yas-gitops.git
+    targetRevision: main
+    path: infra
+    directory:
+      include: postgres-init.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: infra
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
