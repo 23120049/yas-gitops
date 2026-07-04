@@ -11,7 +11,7 @@ spec:
     path: deploy/keycloak/keycloak
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: keycloak
+    namespace: infra
   syncPolicy:
     automated:
       prune: true
