@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: yas-dev
+  name: dev
   labels:
     istio-injection: enabled
   annotations:
