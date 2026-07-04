@@ -2,7 +2,7 @@ apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
   name: restrict-cart-access
-  namespace: yas-staging
+  namespace: staging
 spec:
   selector:
     matchLabels:
@@ -13,5 +13,5 @@ spec:
         - source:
             # Tam thoi de ten service account nhu du doan. Can verify lai khi app len.
             principals:
-              - "cluster.local/ns/yas-staging/sa/storefront-bff"
-              - "cluster.local/ns/yas-staging/sa/order"
+              - "cluster.local/ns/staging/sa/storefront-bff"
+              - "cluster.local/ns/staging/sa/order"

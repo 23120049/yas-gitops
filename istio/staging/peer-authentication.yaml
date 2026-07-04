@@ -2,7 +2,7 @@ apiVersion: security.istio.io/v1beta1
 kind: PeerAuthentication
 metadata:
   name: default-strict-mtls
-  namespace: yas-staging
+  namespace: staging
 spec:
   mtls:
     mode: STRICT

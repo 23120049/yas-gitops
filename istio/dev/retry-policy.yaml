@@ -2,14 +2,14 @@ apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
   name: tax-retry-policy
-  namespace: yas-dev
+  namespace: dev
 spec:
   hosts:
-    - "tax.yas-dev.svc.cluster.local"
+    - "tax.dev.svc.cluster.local"
   http:
     - route:
         - destination:
-            host: "tax.yas-dev.svc.cluster.local"
+            host: "tax.dev.svc.cluster.local"
       retries:
         attempts: 3
         perTryTimeout: 2s
