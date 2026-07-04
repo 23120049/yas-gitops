@@ -5,11 +5,11 @@ backend:
   cart:
     image:
       repository: ghcr.io/23120049/yas-cart
-      tag: latest
+      tag: a6bf5759de72bd9dee5f74a3d81ec038ba872cfe
   media:
     image:
       repository: ghcr.io/23120049/yas-cart
-      tag: latest
+      tag: a6bf5759de72bd9dee5f74a3d81ec038ba872cfe
   customer:
     image:
       repository: ghcr.io/23120049/yas-customer

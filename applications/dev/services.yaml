@@ -1,682 +1,55 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: yas-configuration-dev
-  namespace: argocd
-spec:
-  project: default
-  source:
-    repoURL: 'https://github.com/23120049/yas-helm.git'
-    targetRevision: HEAD
-    path: charts/yas-configuration
-    helm:
-      values: |
-        applicationConfig:
-          springdoc:
-            oauthflow:
-              authorization-url: http://identity.yas.local.com/realms/Yas/protocol/openid-connect/auth
-              token-url: http://identity.yas.local.com/realms/Yas/protocol/openid-connect/token
-        mediaApplicationConfig:
-          yas:
-            publicUrl: http://dev-api.yas.local.com/media
-        paymentPaypalApplicationConfig:
-          yas:
-            public:
-              url: http://dev-storefront.yas.local.com/complete-payment
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-dev
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: backoffice-bff-dev
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/backoffice-bff
-      helm:
-        valueFiles:
-          - $values/values/dev/dynamic-tags/backoffice-bff.yaml
-        values: |
-          backend:
-            ingress:
-              host: dev-backoffice.yas.local.com
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-dev
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: backoffice-ui-dev
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/backoffice-ui
-      helm:
-        valueFiles:
-          - $values/values/dev/dynamic-tags/backoffice.yaml
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-dev
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: storefront-bff-dev
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/storefront-bff
-      helm:
-        valueFiles:
-          - $values/values/dev/dynamic-tags/storefront-bff.yaml
-        values: |
-          backend:
-            ingress:
-              host: dev-storefront.yas.local.com
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-dev
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: storefront-ui-dev
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/storefront-ui
-      helm:
-        valueFiles:
-          - $values/values/dev/dynamic-tags/storefront.yaml
-        values: |
-          ui:
+apiVersion: argoproj.io/v1alpha1kind: Applicationmetadata:  name: yas-configuration-dev  namespace: argocdspec:  project: default  source:    repoURL: 'https://github.com/23120049/yas-helm.git'    targetRevision: HEAD    path: charts/yas-configuration    helm:      values: |        applicationConfig:          springdoc:            oauthflow:              authorization-url: http://identity.yas.local.com/realms/Yas/protocol/openid-connect/auth              token-url: http://identity.yas.local.com/realms/Yas/protocol/openid-connect/token        mediaApplicationConfig:          yas:            publicUrl: http://dev-api.yas.local.com/media        paymentPaypalApplicationConfig:          yas:            public:              url: http://dev-storefront.yas.local.com/complete-payment        sampledataApplicationConfig:
+          spring:
+            datasource:
+              product:
+                url: jdbc:postgresql://postgresql.infra:5432/product_dev
+              media:
+                url: jdbc:postgresql://postgresql.infra:5432/media_dev
+  destination:    server: 'https://kubernetes.default.svc'    namespace: yas-dev  syncPolicy:    automated:      prune: true      selfHeal: true    syncOptions:
+      - CreateNamespace=true---apiVersion: argoproj.io/v1alpha1kind: Applicationmetadata:  name: backoffice-bff-dev  namespace: argocdspec:  project: default  sources:    - repoURL: 'https://github.com/23120049/yas-helm.git'      targetRevision: HEAD      path: charts/backoffice-bff      helm:        valueFiles:          - $values/values/dev/dynamic-tags/backoffice-bff.yaml        values: |          backend:            ingress:              host: dev-backoffice.yas.local.com    - repoURL: 'https://github.com/23120049/yas-gitops.git'      targetRevision: HEAD      ref: values  destination:    server: 'https://kubernetes.default.svc'    namespace: yas-dev  syncPolicy:    automated:      prune: true      selfHeal: true    syncOptions:
+      - CreateNamespace=true---apiVersion: argoproj.io/v1alpha1kind: Applicationmetadata:  name: backoffice-ui-dev  namespace: argocdspec:  project: default  sources:    - repoURL: 'https://github.com/23120049/yas-helm.git'      targetRevision: HEAD      path: charts/backoffice-ui      helm:        valueFiles:          - $values/values/dev/dynamic-tags/backoffice.yaml    - repoURL: 'https://github.com/23120049/yas-gitops.git'      targetRevision: HEAD      ref: values  destination:    server: 'https://kubernetes.default.svc'    namespace: yas-dev  syncPolicy:    automated:      prune: true      selfHeal: true    syncOptions:
+      - CreateNamespace=true---apiVersion: argoproj.io/v1alpha1kind: Applicationmetadata:  name: storefront-bff-dev  namespace: argocdspec:  project: default  sources:    - repoURL: 'https://github.com/23120049/yas-helm.git'      targetRevision: HEAD      path: charts/storefront-bff      helm:        valueFiles:          - $values/values/dev/dynamic-tags/storefront-bff.yaml        values: |          backend:            ingress:              host: dev-storefront.yas.local.com    - repoURL: 'https://github.com/23120049/yas-gitops.git'      targetRevision: HEAD      ref: values  destination:    server: 'https://kubernetes.default.svc'    namespace: yas-dev  syncPolicy:    automated:      prune: true      selfHeal: true    syncOptions:
+      - CreateNamespace=true---apiVersion: argoproj.io/v1alpha1kind: Applicationmetadata:  name: storefront-ui-dev  namespace: argocdspec:  project: default  sources:    - repoURL: 'https://github.com/23120049/yas-helm.git'      targetRevision: HEAD      path: charts/storefront-ui      helm:        valueFiles:          - $values/values/dev/dynamic-tags/storefront.yaml        values: |          ui:            extraEnvs:              - name: API_BASE_PATH                value: http://dev-storefront.yas.local.com/api    - repoURL: 'https://github.com/23120049/yas-gitops.git'      targetRevision: HEAD      ref: values  destination:    server: 'https://kubernetes.default.svc'    namespace: yas-dev  syncPolicy:    automated:      prune: true      selfHeal: true    syncOptions:
+      - CreateNamespace=true---apiVersion: argoproj.io/v1alpha1kind: Applicationmetadata:  name: swagger-ui-dev  namespace: argocdspec:  project: default  source:    repoURL: 'https://github.com/23120049/yas-helm.git'    targetRevision: HEAD    path: charts/swagger-ui    helm:      values: |        urls: "[{ url: 'http://dev-api.yas.local.com/product/v3/api-docs', name: 'Product' }, { url: 'http://dev-api.yas.local.com/media/v3/api-docs', name: 'Media' }, { url: 'http://dev-api.yas.local.com/customer/v3/api-docs', name: 'Customer' }, { url: 'http://dev-api.yas.local.com/cart/v3/api-docs', name: 'Cart' }, { url: 'http://dev-api.yas.local.com/rating/v3/api-docs', name: 'Rating' }, { url: 'http://dev-api.yas.local.com/order/v3/api-docs', name: 'Order' }, { url: 'http://dev-api.yas.local.com/payment/v3/api-docs', name: 'Payment' }, { url: 'http://dev-api.yas.local.com/location/v3/api-docs', name: 'Location' }, { url: 'http://dev-api.yas.local.com/inventory/v3/api-docs', name: 'Inventory' }, { url: 'http://dev-api.yas.local.com/tax/v3/api-docs', name: 'Tax' }, { url: 'http://dev-api.yas.local.com/promotion/v3/api-docs', name: 'Promotion' }, { url: 'http://dev-api.yas.local.com/search/v3/api-docs', name: 'Search' }]"        ingress:          host: dev-api.yas.local.com          hosts:            - host: dev-api.yas.local.com              paths:                - path: /swagger-ui                  pathType: ImplementationSpecific  destination:    server: 'https://kubernetes.default.svc'    namespace: yas-dev  syncPolicy:    automated:      prune: true      selfHeal: true    syncOptions:
+      - CreateNamespace=true---apiVersion: argoproj.io/v1alpha1kind: Applicationmetadata:  name: cart-dev  namespace: argocdspec:  project: default  sources:    - repoURL: 'https://github.com/23120049/yas-helm.git'      targetRevision: HEAD      path: charts/cart      helm:        valueFiles:          - $values/values/dev/dynamic-tags/cart.yaml        values: |          backend:            databaseName: cart_dev            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'      targetRevision: HEAD      ref: values  destination:    server: 'https://kubernetes.default.svc'    namespace: yas-dev  syncPolicy:    automated:      prune: true      selfHeal: true    syncOptions:
+      - CreateNamespace=true---apiVersion: argoproj.io/v1alpha1kind: Applicationmetadata:  name: customer-dev  namespace: argocdspec:  project: default  sources:    - repoURL: 'https://github.com/23120049/yas-helm.git'      targetRevision: HEAD      path: charts/customer      helm:        valueFiles:          - $values/values/dev/dynamic-tags/customer.yaml        values: |          backend:            databaseName: customer_dev            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'      targetRevision: HEAD      ref: values  destination:    server: 'https://kubernetes.default.svc'    namespace: yas-dev  syncPolicy:    automated:      prune: true      selfHeal: true    syncOptions:
+      - CreateNamespace=true---apiVersion: argoproj.io/v1alpha1kind: Applicationmetadata:  name: inventory-dev  namespace: argocdspec:  project: default  sources:    - repoURL: 'https://github.com/23120049/yas-helm.git'      targetRevision: HEAD      path: charts/inventory      helm:        valueFiles:          - $values/values/dev/dynamic-tags/inventory.yaml        values: |          backend:            databaseName: inventory_dev            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'      targetRevision: HEAD      ref: values  destination:    server: 'https://kubernetes.default.svc'    namespace: yas-dev  syncPolicy:    automated:      prune: true      selfHeal: true    syncOptions:
+      - CreateNamespace=true---apiVersion: argoproj.io/v1alpha1kind: Applicationmetadata:  name: location-dev  namespace: argocdspec:  project: default  sources:    - repoURL: 'https://github.com/23120049/yas-helm.git'      targetRevision: HEAD      path: charts/location      helm:        valueFiles:          - $values/values/dev/dynamic-tags/location.yaml        values: |          backend:            databaseName: location_dev            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'      targetRevision: HEAD      ref: values  destination:    server: 'https://kubernetes.default.svc'    namespace: yas-dev  syncPolicy:    automated:      prune: true      selfHeal: true    syncOptions:
+      - CreateNamespace=true---apiVersion: argoproj.io/v1alpha1kind: Applicationmetadata:  name: media-dev  namespace: argocdspec:  project: default  sources:    - repoURL: 'https://github.com/23120049/yas-helm.git'      targetRevision: HEAD      path: charts/media      helm:        valueFiles:          - $values/values/dev/dynamic-tags/media.yaml        values: |          backend:            databaseName: media_dev            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'      targetRevision: HEAD      ref: values  destination:    server: 'https://kubernetes.default.svc'    namespace: yas-dev  syncPolicy:    automated:      prune: true      selfHeal: true    syncOptions:
+      - CreateNamespace=true---apiVersion: argoproj.io/v1alpha1kind: Applicationmetadata:  name: order-dev  namespace: argocdspec:  project: default  sources:    - repoURL: 'https://github.com/23120049/yas-helm.git'      targetRevision: HEAD      path: charts/order      helm:        valueFiles:          - $values/values/dev/dynamic-tags/order.yaml        values: |          backend:            databaseName: order_dev            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'      targetRevision: HEAD      ref: values  destination:    server: 'https://kubernetes.default.svc'    namespace: yas-dev  syncPolicy:    automated:      prune: true      selfHeal: true    syncOptions:
+      - CreateNamespace=true---apiVersion: argoproj.io/v1alpha1kind: Applicationmetadata:  name: payment-dev  namespace: argocdspec:  project: default  sources:    - repoURL: 'https://github.com/23120049/yas-helm.git'      targetRevision: HEAD      path: charts/payment      helm:        valueFiles:          - $values/values/dev/dynamic-tags/payment.yaml        values: |          backend:            databaseName: payment_dev            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'      targetRevision: HEAD      ref: values  destination:    server: 'https://kubernetes.default.svc'    namespace: yas-dev  syncPolicy:    automated:      prune: true      selfHeal: true    syncOptions:
+      - CreateNamespace=true---apiVersion: argoproj.io/v1alpha1kind: Applicationmetadata:  name: payment-paypal-dev  namespace: argocdspec:  project: default  sources:    - repoURL: 'https://github.com/23120049/yas-helm.git'      targetRevision: HEAD      path: charts/payment-paypal      helm:        valueFiles:          - $values/values/dev/dynamic-tags/payment-paypal.yaml        values: |          backend:            databaseName: payment_paypal_dev            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'      targetRevision: HEAD      ref: values  destination:    server: 'https://kubernetes.default.svc'    namespace: yas-dev  syncPolicy:    automated:      prune: true      selfHeal: true    syncOptions:
+      - CreateNamespace=true---apiVersion: argoproj.io/v1alpha1kind: Applicationmetadata:  name: product-dev  namespace: argocdspec:  project: default  sources:    - repoURL: 'https://github.com/23120049/yas-helm.git'      targetRevision: HEAD      path: charts/product      helm:        valueFiles:          - $values/values/dev/dynamic-tags/product.yaml        values: |          backend:            databaseName: product_dev            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'      targetRevision: HEAD      ref: values  destination:    server: 'https://kubernetes.default.svc'    namespace: yas-dev  syncPolicy:    automated:      prune: true      selfHeal: true    syncOptions:
+      - CreateNamespace=true---apiVersion: argoproj.io/v1alpha1kind: Applicationmetadata:  name: promotion-dev  namespace: argocdspec:  project: default  sources:    - repoURL: 'https://github.com/23120049/yas-helm.git'      targetRevision: HEAD      path: charts/promotion      helm:        valueFiles:          - $values/values/dev/dynamic-tags/promotion.yaml        values: |          backend:            databaseName: promotion_dev            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'      targetRevision: HEAD      ref: values  destination:    server: 'https://kubernetes.default.svc'    namespace: yas-dev  syncPolicy:    automated:      prune: true      selfHeal: true    syncOptions:
+      - CreateNamespace=true---apiVersion: argoproj.io/v1alpha1kind: Applicationmetadata:  name: rating-dev  namespace: argocdspec:  project: default  sources:    - repoURL: 'https://github.com/23120049/yas-helm.git'      targetRevision: HEAD      path: charts/rating      helm:        valueFiles:          - $values/values/dev/dynamic-tags/rating.yaml        values: |          backend:            databaseName: rating_dev            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'      targetRevision: HEAD      ref: values  destination:    server: 'https://kubernetes.default.svc'    namespace: yas-dev  syncPolicy:    automated:      prune: true      selfHeal: true    syncOptions:
+      - CreateNamespace=true---apiVersion: argoproj.io/v1alpha1kind: Applicationmetadata:  name: recommendation-dev  namespace: argocdspec:  project: default  sources:    - repoURL: 'https://github.com/23120049/yas-helm.git'      targetRevision: HEAD      path: charts/recommendation      helm:        valueFiles:          - $values/values/dev/dynamic-tags/recommendation.yaml        values: |          backend:            databaseName: recommendation_dev            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
             extraEnvs:
-              - name: API_BASE_PATH
-                value: http://dev-storefront.yas.local.com/api
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-dev
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: swagger-ui-dev
-  namespace: argocd
-spec:
-  project: default
-  source:
-    repoURL: 'https://github.com/23120049/yas-helm.git'
-    targetRevision: HEAD
-    path: charts/swagger-ui
-    helm:
-      values: |
-        urls: "[{ url: 'http://dev-api.yas.local.com/product/v3/api-docs', name: 'Product' }, { url: 'http://dev-api.yas.local.com/media/v3/api-docs', name: 'Media' }, { url: 'http://dev-api.yas.local.com/customer/v3/api-docs', name: 'Customer' }, { url: 'http://dev-api.yas.local.com/cart/v3/api-docs', name: 'Cart' }, { url: 'http://dev-api.yas.local.com/rating/v3/api-docs', name: 'Rating' }, { url: 'http://dev-api.yas.local.com/order/v3/api-docs', name: 'Order' }, { url: 'http://dev-api.yas.local.com/payment/v3/api-docs', name: 'Payment' }, { url: 'http://dev-api.yas.local.com/location/v3/api-docs', name: 'Location' }, { url: 'http://dev-api.yas.local.com/inventory/v3/api-docs', name: 'Inventory' }, { url: 'http://dev-api.yas.local.com/tax/v3/api-docs', name: 'Tax' }, { url: 'http://dev-api.yas.local.com/promotion/v3/api-docs', name: 'Promotion' }, { url: 'http://dev-api.yas.local.com/search/v3/api-docs', name: 'Search' }]"
-        ingress:
-          host: dev-api.yas.local.com
-          hosts:
-            - host: dev-api.yas.local.com
-              paths:
-                - path: /swagger-ui
-                  pathType: ImplementationSpecific
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-dev
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: cart-dev
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/cart
-      helm:
-        valueFiles:
-          - $values/values/dev/dynamic-tags/cart.yaml
-        values: |
-          backend:
-            databaseName: cart_dev
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-dev
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: customer-dev
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/customer
-      helm:
-        valueFiles:
-          - $values/values/dev/dynamic-tags/customer.yaml
-        values: |
-          backend:
-            databaseName: customer_dev
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-dev
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: inventory-dev
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/inventory
-      helm:
-        valueFiles:
-          - $values/values/dev/dynamic-tags/inventory.yaml
-        values: |
-          backend:
-            databaseName: inventory_dev
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-dev
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: location-dev
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/location
-      helm:
-        valueFiles:
-          - $values/values/dev/dynamic-tags/location.yaml
-        values: |
-          backend:
-            databaseName: location_dev
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-dev
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: media-dev
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/media
-      helm:
-        valueFiles:
-          - $values/values/dev/dynamic-tags/media.yaml
-        values: |
-          backend:
-            databaseName: media_dev
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-dev
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: order-dev
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/order
-      helm:
-        valueFiles:
-          - $values/values/dev/dynamic-tags/order.yaml
-        values: |
-          backend:
-            databaseName: order_dev
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-dev
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: payment-dev
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/payment
-      helm:
-        valueFiles:
-          - $values/values/dev/dynamic-tags/payment.yaml
-        values: |
-          backend:
-            databaseName: payment_dev
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-dev
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: payment-paypal-dev
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/payment-paypal
-      helm:
-        valueFiles:
-          - $values/values/dev/dynamic-tags/payment-paypal.yaml
-        values: |
-          backend:
-            databaseName: payment_paypal_dev
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-dev
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: product-dev
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/product
-      helm:
-        valueFiles:
-          - $values/values/dev/dynamic-tags/product.yaml
-        values: |
-          backend:
-            databaseName: product_dev
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-dev
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: promotion-dev
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/promotion
-      helm:
-        valueFiles:
-          - $values/values/dev/dynamic-tags/promotion.yaml
-        values: |
-          backend:
-            databaseName: promotion_dev
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-dev
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: rating-dev
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/rating
-      helm:
-        valueFiles:
-          - $values/values/dev/dynamic-tags/rating.yaml
-        values: |
-          backend:
-            databaseName: rating_dev
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-dev
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: recommendation-dev
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/recommendation
-      helm:
-        valueFiles:
-          - $values/values/dev/dynamic-tags/recommendation.yaml
-        values: |
-          backend:
-            databaseName: recommendation_dev
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-dev
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: search-dev
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/search
-      helm:
-        valueFiles:
-          - $values/values/dev/dynamic-tags/search.yaml
-        values: |
-          backend:
-            databaseName: search_dev
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-dev
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: tax-dev
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/tax
-      helm:
-        valueFiles:
-          - $values/values/dev/dynamic-tags/tax.yaml
-        values: |
-          backend:
-            databaseName: tax_dev
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-dev
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: webhook-dev
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/webhook
-      helm:
-        valueFiles:
-          - $values/values/dev/dynamic-tags/webhook.yaml
-        values: |
-          backend:
-            databaseName: webhook_dev
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-dev
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: sampledata-dev
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
-      path: charts/sampledata
-      helm:
-        valueFiles:
-          - $values/values/dev/dynamic-tags/sampledata.yaml
-        values: |
-          backend:
-            databaseName: sampledata_dev
-            databaseConnectionUrl: jdbc:postgresql://postgresql.postgres:5432
-    - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: yas-dev
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
+              - name: PRODUCT_TOPIC_NAME
+                value: dbproductdev.public.product
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'      targetRevision: HEAD      ref: values  destination:    server: 'https://kubernetes.default.svc'    namespace: yas-dev  syncPolicy:    automated:      prune: true      selfHeal: true    syncOptions:
+      - CreateNamespace=true---apiVersion: argoproj.io/v1alpha1kind: Applicationmetadata:  name: search-dev  namespace: argocdspec:  project: default  sources:    - repoURL: 'https://github.com/23120049/yas-helm.git'      targetRevision: HEAD      path: charts/search      helm:        valueFiles:          - $values/values/dev/dynamic-tags/search.yaml        values: |          backend:            databaseName: search_dev            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+            extraEnvs:
+              - name: PRODUCT_TOPIC_NAME
+                value: dbproductdev.public.product
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'      targetRevision: HEAD      ref: values  destination:    server: 'https://kubernetes.default.svc'    namespace: yas-dev  syncPolicy:    automated:      prune: true      selfHeal: true    syncOptions:
+      - CreateNamespace=true---apiVersion: argoproj.io/v1alpha1kind: Applicationmetadata:  name: tax-dev  namespace: argocdspec:  project: default  sources:    - repoURL: 'https://github.com/23120049/yas-helm.git'      targetRevision: HEAD      path: charts/tax      helm:        valueFiles:          - $values/values/dev/dynamic-tags/tax.yaml        values: |          backend:            databaseName: tax_dev            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'      targetRevision: HEAD      ref: values  destination:    server: 'https://kubernetes.default.svc'    namespace: yas-dev  syncPolicy:    automated:      prune: true      selfHeal: true    syncOptions:
+      - CreateNamespace=true---apiVersion: argoproj.io/v1alpha1kind: Applicationmetadata:  name: webhook-dev  namespace: argocdspec:  project: default  sources:    - repoURL: 'https://github.com/23120049/yas-helm.git'      targetRevision: HEAD      path: charts/webhook      helm:        valueFiles:          - $values/values/dev/dynamic-tags/webhook.yaml        values: |          backend:            databaseName: webhook_dev            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+            extraEnvs:
+              - name: WEBHOOK_INTEGRATION_KAFKA_PRODUCT_TOPIC_NAME
+                value: dbproductdev.public.product
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'      targetRevision: HEAD      ref: values  destination:    server: 'https://kubernetes.default.svc'    namespace: yas-dev  syncPolicy:    automated:      prune: true      selfHeal: true    syncOptions:
+      - CreateNamespace=true---apiVersion: argoproj.io/v1alpha1kind: Applicationmetadata:  name: sampledata-dev  namespace: argocdspec:  project: default  sources:    - repoURL: 'https://github.com/23120049/yas-helm.git'      targetRevision: HEAD      path: charts/sampledata      helm:        valueFiles:          - $values/values/dev/dynamic-tags/sampledata.yaml        values: |          backend:            databaseName: sampledata_dev            databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
+    - repoURL: 'https://github.com/23120049/yas-gitops.git'      targetRevision: HEAD      ref: values  destination:    server: 'https://kubernetes.default.svc'    namespace: yas-dev  syncPolicy:    automated:      prune: true      selfHeal: true    syncOptions:
+      - CreateNamespace=true
