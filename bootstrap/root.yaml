@@ -18,7 +18,7 @@ spec:
 
     repoURL: 'https://github.com/23120049/yas-gitops.git'
 
-    targetRevision: main
+    targetRevision: vibebranch
 
     path: infra
 
@@ -56,7 +56,7 @@ spec:
 
     repoURL: 'https://github.com/23120049/yas-gitops.git'
 
-    targetRevision: main
+    targetRevision: vibebranch
 
     path: applications/dev
 
@@ -94,7 +94,7 @@ spec:
 
     repoURL: 'https://github.com/23120049/yas-gitops.git'
 
-    targetRevision: main
+    targetRevision: vibebranch
 
     path: applications/staging
 
@@ -132,7 +132,7 @@ spec:
 
     repoURL: 'https://github.com/23120049/yas-gitops.git'
 
-    targetRevision: main
+    targetRevision: vibebranch
 
     path: istio/dev
 
@@ -170,7 +170,7 @@ spec:
 
     repoURL: 'https://github.com/23120049/yas-gitops.git'
 
-    targetRevision: main
+    targetRevision: vibebranch
 
     path: istio/staging
 
