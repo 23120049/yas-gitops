@@ -18,7 +18,7 @@ postgresql:
 debeziumConnect:
   name: yas-connect
   image: ghcr.io/23120049/debezium-connect-postgresql:latest
-  buildImage: false
+  buildImage: true
   connectorsEnabled: false
   resources:
     requests:
