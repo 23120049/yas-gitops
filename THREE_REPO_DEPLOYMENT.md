@@ -63,7 +63,7 @@ Operators do not rerun the complete bootstrap for every application release.
 | Run `deploy-yas-applications.sh` | `yas-gitops` | Workload phase containing all service Applications |
 | Use sleeps between Helm commands | `yas-gitops` | Argo health checks and explicit `kubectl wait` gates |
 | Use Minikube Nginx ingress | `yas-gitops` | Istio Gateway through k3s ServiceLB on node D |
-| Edit the hosts file | `yas-gitops` | `sslip.io` names resolving to node D's Tailscale IP |
+| Edit the hosts file | Team workstations | Map `*.yas.local.com` to the Istio gateway's advertised Tailscale IP |
 | Run Kafka with ZooKeeper | `yas-helm` | Strimzi Kafka in KRaft mode with `KafkaNodePool` |
 
 ## What happens when bootstrap runs
@@ -84,8 +84,8 @@ The script performs the following ordered sequence.
 - Keeps an existing Istio installation when its gateway is present.
 - Installs Istio with an ingress gateway only when Istio is absent.
 - Waits for `istiod` and `istio-ingressgateway`.
-- Verifies that k3s ServiceLB advertises the expected node D Tailscale address,
-  currently `100.108.98.79`.
+- Verifies that k3s ServiceLB publishes an address for node D. When
+  `EXPECTED_INGRESS_IP` is supplied, bootstrap also checks the exact address.
 
 This keeps Istio as the only external ingress. Nginx is not installed.
 
@@ -157,15 +157,20 @@ VirtualServices. Kubernetes Nginx Ingress resources are disabled.
 Example URLs are:
 
 ```text
-http://dev-storefront.yas.100-108-98-79.sslip.io
-http://dev-backoffice.yas.100-108-98-79.sslip.io
-http://dev-api.yas.100-108-98-79.sslip.io
-http://staging-storefront.yas.100-108-98-79.sslip.io
-http://identity.yas.100-108-98-79.sslip.io
+http://dev-storefront.yas.local.com
+http://dev-backoffice.yas.local.com
+http://dev-api.yas.local.com
+http://staging-storefront.yas.local.com
+http://identity.yas.local.com
 ```
 
-`sslip.io` supplies DNS; k3s ServiceLB determines which node advertises the
-Istio gateway. ServiceLB by itself does not provide DNS.
+Each teammate maps these names to the address advertised by the
+`istio-ingressgateway` Service. ServiceLB determines the traffic endpoint but
+does not configure workstation DNS or hosts files.
+
+Pods do not rely on workstation hosts files. Browser-facing OAuth authorization
+URLs use `identity.yas.local.com`, while token, JWK, user-info, and Keycloak
+administration calls use the internal `keycloak-service.infra` Service.
 
 ## Commands to use
 
@@ -205,8 +210,8 @@ root Applications with phased roots.
 EXPECTED_INGRESS_IP='<tailscale-ip>' ./scripts/bootstrap.sh
 ```
 
-The checked-in hostnames also need their embedded `sslip.io` address updated
-when node D's Tailscale IP changes.
+Use the gateway Service's advertised address rather than assuming whether the
+correct Tailscale IP belongs to Windows or the Linux/WSL k3s environment.
 
 ## Does this reproduce the original deployment logic?
 
@@ -240,7 +245,7 @@ The implementation has passed local static checks:
 - Helm renders show no core Nginx Ingress resources.
 - Helm renders show no early KafkaConnector resources.
 - Helm renders show no ServiceMonitor dependency on a missing Prometheus CRD.
-- The `sslip.io` storefront hostname resolves to `100.108.98.79`.
+- Istio hosts and Keycloak redirects consistently use `*.yas.local.com`.
 - Every active child Argo CD Application has a bootstrap readiness gate.
 
 However, it is not correct to call the deployment fully proven yet:
@@ -248,9 +253,9 @@ However, it is not correct to call the deployment fully proven yet:
 1. `yas-gitops/vibebranch` and `yas-helm/vibebranch` must both be merged into
    `main`; the Applications intentionally read remote `main`.
 2. The command must be run against the real k3s cluster.
-3. The live test must confirm that `istio-ingressgateway` advertises
-   `100.108.98.79`, all Applications become Healthy, and the external URLs
-   respond through Tailscale.
+3. The live test must confirm that `istio-ingressgateway` advertises node D's
+   reachable Tailscale IP, all Applications become Healthy, and the external
+   URLs respond through the teammates' hosts-file mappings.
 
 Therefore, the one-command mechanism exists and the deployment logic is
 represented, but production readiness remains conditional on the first

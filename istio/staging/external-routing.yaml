@@ -5,14 +5,14 @@ metadata:
   namespace: staging
 spec:
   hosts:
-    - staging-storefront.yas.100-108-98-79.sslip.io
-    - staging-backoffice.yas.100-108-98-79.sslip.io
+    - staging-storefront.yas.local.com
+    - staging-backoffice.yas.local.com
   gateways:
     - istio-system/yas-gateway
   http:
     - match:
         - authority:
-            exact: staging-storefront.yas.100-108-98-79.sslip.io
+            exact: staging-storefront.yas.local.com
       route:
         - destination:
             host: storefront-bff.staging.svc.cluster.local
@@ -20,7 +20,7 @@ spec:
               number: 80
     - match:
         - authority:
-            exact: staging-backoffice.yas.100-108-98-79.sslip.io
+            exact: staging-backoffice.yas.local.com
       route:
         - destination:
             host: backoffice-bff.staging.svc.cluster.local
@@ -34,7 +34,7 @@ metadata:
   namespace: staging
 spec:
   hosts:
-    - staging-api.yas.100-108-98-79.sslip.io
+    - staging-api.yas.local.com
   gateways:
     - istio-system/yas-gateway
   http:

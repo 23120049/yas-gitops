@@ -5,15 +5,15 @@ metadata:
   namespace: infra
 spec:
   hosts:
-    - identity.yas.100-108-98-79.sslip.io
-    - pgadmin.yas.100-108-98-79.sslip.io
-    - kibana.yas.100-108-98-79.sslip.io
+    - identity.yas.local.com
+    - pgadmin.yas.local.com
+    - kibana.yas.local.com
   gateways:
     - istio-system/yas-gateway
   http:
     - match:
         - authority:
-            exact: identity.yas.100-108-98-79.sslip.io
+            exact: identity.yas.local.com
       route:
         - destination:
             host: keycloak-service.infra.svc.cluster.local
@@ -21,7 +21,7 @@ spec:
               number: 80
     - match:
         - authority:
-            exact: pgadmin.yas.100-108-98-79.sslip.io
+            exact: pgadmin.yas.local.com
       route:
         - destination:
             host: pgadmin.infra.svc.cluster.local
@@ -29,7 +29,7 @@ spec:
               number: 80
     - match:
         - authority:
-            exact: kibana.yas.100-108-98-79.sslip.io
+            exact: kibana.yas.local.com
       route:
         - destination:
             host: kibana-kb-http.infra.svc.cluster.local

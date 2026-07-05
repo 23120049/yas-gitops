@@ -1,17 +1,18 @@
-# No hosts-file changes are required.
-# sslip.io resolves the embedded address to node D's Tailscale IP: 100.108.98.79.
+# Replace <NODE_D_TAILSCALE_IP> with the address advertised by:
+# kubectl get service istio-ingressgateway -n istio-system \
+#   -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
 
 # Dev
-http://dev-api.yas.100-108-98-79.sslip.io
-http://dev-backoffice.yas.100-108-98-79.sslip.io
-http://dev-storefront.yas.100-108-98-79.sslip.io
+<NODE_D_TAILSCALE_IP> dev-api.yas.local.com
+<NODE_D_TAILSCALE_IP> dev-backoffice.yas.local.com
+<NODE_D_TAILSCALE_IP> dev-storefront.yas.local.com
 
 # Staging
-http://staging-api.yas.100-108-98-79.sslip.io
-http://staging-backoffice.yas.100-108-98-79.sslip.io
-http://staging-storefront.yas.100-108-98-79.sslip.io
+<NODE_D_TAILSCALE_IP> staging-api.yas.local.com
+<NODE_D_TAILSCALE_IP> staging-backoffice.yas.local.com
+<NODE_D_TAILSCALE_IP> staging-storefront.yas.local.com
 
 # Shared infrastructure
-http://identity.yas.100-108-98-79.sslip.io
-http://pgadmin.yas.100-108-98-79.sslip.io
-http://kibana.yas.100-108-98-79.sslip.io
+<NODE_D_TAILSCALE_IP> identity.yas.local.com
+<NODE_D_TAILSCALE_IP> pgadmin.yas.local.com
+<NODE_D_TAILSCALE_IP> kibana.yas.local.com

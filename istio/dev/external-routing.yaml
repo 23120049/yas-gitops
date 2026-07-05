@@ -5,14 +5,14 @@ metadata:
   namespace: dev
 spec:
   hosts:
-    - dev-storefront.yas.100-108-98-79.sslip.io
-    - dev-backoffice.yas.100-108-98-79.sslip.io
+    - dev-storefront.yas.local.com
+    - dev-backoffice.yas.local.com
   gateways:
     - istio-system/yas-gateway
   http:
     - match:
         - authority:
-            exact: dev-storefront.yas.100-108-98-79.sslip.io
+            exact: dev-storefront.yas.local.com
       route:
         - destination:
             host: storefront-bff.dev.svc.cluster.local
@@ -20,7 +20,7 @@ spec:
               number: 80
     - match:
         - authority:
-            exact: dev-backoffice.yas.100-108-98-79.sslip.io
+            exact: dev-backoffice.yas.local.com
       route:
         - destination:
             host: backoffice-bff.dev.svc.cluster.local
@@ -34,7 +34,7 @@ metadata:
   namespace: dev
 spec:
   hosts:
-    - dev-api.yas.100-108-98-79.sslip.io
+    - dev-api.yas.local.com
   gateways:
     - istio-system/yas-gateway
   http:

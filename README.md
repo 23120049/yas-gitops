@@ -106,13 +106,13 @@ Vì chạy song song hai môi trường trên cùng cluster, các public host ph
 ## DNS and ingress
 
 Istio is the only external ingress. K3s ServiceLB must advertise
-`istio-ingressgateway` on node D at Tailscale IP `100.108.98.79`. Public names
-embed that IP through `sslip.io`, so clients on the tailnet do not edit their
-hosts file. See `hostnames.txt` for the URL list.
+`istio-ingressgateway` on node D. Each teammate maps the `*.yas.local.com`
+names in `hostnames.txt` to the IP reported by the gateway Service.
 
-ServiceLB controls where the gateway is advertised; `sslip.io` supplies DNS.
-If node D's Tailscale IP changes, replace both `100.108.98.79` and
-`100-108-98-79` in this repository before deployment.
+Use the Linux/WSL Tailscale IP when that environment directly runs k3s and
+ServiceLB advertises it. Use the Windows Tailscale IP only when Windows owns
+Tailscale and forwards ports 80/443 into the k3s environment. The authoritative
+value is `.status.loadBalancer.ingress[0].ip` on `istio-ingressgateway`.
 
 ## One-command bootstrap
 
@@ -259,14 +259,14 @@ Trích từ file `yas-helm/deploy/keycloak/keycloak/values.yaml`:
 
 ```yaml
 backofficeRedirectUrls:
-  - http://dev-backoffice.yas.100-108-98-79.sslip.io
-  - http://staging-backoffice.yas.100-108-98-79.sslip.io
+  - http://dev-backoffice.yas.local.com
+  - http://staging-backoffice.yas.local.com
 storefrontRedirectUrls:
-  - http://dev-storefront.yas.100-108-98-79.sslip.io
-  - http://staging-storefront.yas.100-108-98-79.sslip.io
+  - http://dev-storefront.yas.local.com
+  - http://staging-storefront.yas.local.com
 apiRedirectUrls:
-  - http://dev-api.yas.100-108-98-79.sslip.io
-  - http://staging-api.yas.100-108-98-79.sslip.io
+  - http://dev-api.yas.local.com
+  - http://staging-api.yas.local.com
 ```
 
 ## Istio
@@ -312,14 +312,14 @@ kubectl get ingress -A
 
 Kiểm tra URL:
 
-- `http://dev-storefront.yas.100-108-98-79.sslip.io`
-- `http://dev-backoffice.yas.100-108-98-79.sslip.io`
-- `http://dev-api.yas.100-108-98-79.sslip.io/swagger-ui`
-- `http://staging-storefront.yas.100-108-98-79.sslip.io`
-- `http://staging-backoffice.yas.100-108-98-79.sslip.io`
-- `http://staging-api.yas.100-108-98-79.sslip.io/swagger-ui`
-- `http://identity.yas.100-108-98-79.sslip.io`
-- `http://kibana.yas.100-108-98-79.sslip.io`
+- `http://dev-storefront.yas.local.com`
+- `http://dev-backoffice.yas.local.com`
+- `http://dev-api.yas.local.com/swagger-ui`
+- `http://staging-storefront.yas.local.com`
+- `http://staging-backoffice.yas.local.com`
+- `http://staging-api.yas.local.com/swagger-ui`
+- `http://identity.yas.local.com`
+- `http://kibana.yas.local.com`
 
 ## Ghi chú còn cần xác minh trên cluster
 

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 TIMEOUT="${BOOTSTRAP_TIMEOUT:-15m}"
-EXPECTED_INGRESS_IP="${EXPECTED_INGRESS_IP:-100.108.98.79}"
+EXPECTED_INGRESS_IP="${EXPECTED_INGRESS_IP:-}"
 
 command -v kubectl >/dev/null 2>&1 || {
   echo "kubectl is required but was not found in PATH." >&2

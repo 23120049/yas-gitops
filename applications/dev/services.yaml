@@ -16,7 +16,7 @@ spec:
           backend:
             ingress:
               enabled: false
-              host: dev-backoffice.yas.100-108-98-79.sslip.io
+              host: dev-backoffice.yas.local.com
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
       targetRevision: main
       ref: values
@@ -75,7 +75,7 @@ spec:
           backend:
             ingress:
               enabled: false
-              host: dev-storefront.yas.100-108-98-79.sslip.io
+              host: dev-storefront.yas.local.com
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
       targetRevision: main
       ref: values
@@ -107,7 +107,7 @@ spec:
           ui:
             extraEnvs:
               - name: API_BASE_PATH
-                value: http://dev-storefront.yas.100-108-98-79.sslip.io/api
+                value: http://dev-storefront.yas.local.com/api
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
       targetRevision: main
       ref: values
@@ -134,12 +134,12 @@ spec:
     path: charts/swagger-ui
     helm:
       values: |
-        urls: "[{ url: 'http://dev-api.yas.100-108-98-79.sslip.io/product/v3/api-docs', name: 'Product' }, { url: 'http://dev-api.yas.100-108-98-79.sslip.io/media/v3/api-docs', name: 'Media' }, { url: 'http://dev-api.yas.100-108-98-79.sslip.io/customer/v3/api-docs', name: 'Customer' }, { url: 'http://dev-api.yas.100-108-98-79.sslip.io/cart/v3/api-docs', name: 'Cart' }, { url: 'http://dev-api.yas.100-108-98-79.sslip.io/rating/v3/api-docs', name: 'Rating' }, { url: 'http://dev-api.yas.100-108-98-79.sslip.io/order/v3/api-docs', name: 'Order' }, { url: 'http://dev-api.yas.100-108-98-79.sslip.io/payment/v3/api-docs', name: 'Payment' }, { url: 'http://dev-api.yas.100-108-98-79.sslip.io/location/v3/api-docs', name: 'Location' }, { url: 'http://dev-api.yas.100-108-98-79.sslip.io/inventory/v3/api-docs', name: 'Inventory' }, { url: 'http://dev-api.yas.100-108-98-79.sslip.io/tax/v3/api-docs', name: 'Tax' }, { url: 'http://dev-api.yas.100-108-98-79.sslip.io/promotion/v3/api-docs', name: 'Promotion' }, { url: 'http://dev-api.yas.100-108-98-79.sslip.io/search/v3/api-docs', name: 'Search' }]"
+        urls: "[{ url: 'http://dev-api.yas.local.com/product/v3/api-docs', name: 'Product' }, { url: 'http://dev-api.yas.local.com/media/v3/api-docs', name: 'Media' }, { url: 'http://dev-api.yas.local.com/customer/v3/api-docs', name: 'Customer' }, { url: 'http://dev-api.yas.local.com/cart/v3/api-docs', name: 'Cart' }, { url: 'http://dev-api.yas.local.com/rating/v3/api-docs', name: 'Rating' }, { url: 'http://dev-api.yas.local.com/order/v3/api-docs', name: 'Order' }, { url: 'http://dev-api.yas.local.com/payment/v3/api-docs', name: 'Payment' }, { url: 'http://dev-api.yas.local.com/location/v3/api-docs', name: 'Location' }, { url: 'http://dev-api.yas.local.com/inventory/v3/api-docs', name: 'Inventory' }, { url: 'http://dev-api.yas.local.com/tax/v3/api-docs', name: 'Tax' }, { url: 'http://dev-api.yas.local.com/promotion/v3/api-docs', name: 'Promotion' }, { url: 'http://dev-api.yas.local.com/search/v3/api-docs', name: 'Search' }]"
         ingress:
           enabled: false
-          host: dev-api.yas.100-108-98-79.sslip.io
+          host: dev-api.yas.local.com
           hosts:
-            - host: dev-api.yas.100-108-98-79.sslip.io
+            - host: dev-api.yas.local.com
               paths:
                 - path: /swagger-ui
                   pathType: ImplementationSpecific
