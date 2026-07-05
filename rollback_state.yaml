@@ -5,88 +5,71 @@ backend:
   cart:
     image:
       repository: ghcr.io/23120049/yas-cart
-      tag: latest
-  
+      tag: a6bf5759de72bd9dee5f74a3d81ec038ba872cfe
   media:
     image:
       repository: ghcr.io/23120049/yas-cart
-      tag: latest
-
+      tag: a6bf5759de72bd9dee5f74a3d81ec038ba872cfe
   customer:
     image:
       repository: ghcr.io/23120049/yas-customer
       tag: latest
-  
   inventory:
     image:
       repository: ghcr.io/23120049/yas-inventory
       tag: latest
-  
   order:
     image:
       repository: ghcr.io/23120049/yas-order
       tag: latest
-  
   payment:
     image:
       repository: ghcr.io/23120049/yas-payment
       tag: latest
-  
   payment-paypal:
     image:
       repository: ghcr.io/23120049/yas-payment-paypal
       tag: latest
-  
   product:
     image:
       repository: ghcr.io/23120049/yas-product
       tag: latest
-  
   promotion:
     image:
       repository: ghcr.io/23120049/yas-promotion
       tag: latest
-  
   rating:
     image:
       repository: ghcr.io/23120049/yas-rating
       tag: latest
-  
   recommendation:
     image:
       repository: ghcr.io/23120049/yas-recommendation
       tag: latest
-  
   search:
     image:
       repository: ghcr.io/23120049/yas-search
       tag: latest
-  
   tax:
     image:
       repository: ghcr.io/23120049/yas-tax
       tag: latest
-  
   storefront-bff:
     image:
       repository: ghcr.io/23120049/yas-storefront-bff
       tag: latest
-  
   backoffice-bff:
     image:
       repository: ghcr.io/23120049/yas-backoffice-bff
       tag: latest
-  
   webhook:
     image:
       repository: ghcr.io/23120049/yas-webhook
       tag: latest
-
   location:
     image:
       repository: ghcr.io/23120049/yas-backoffice-bff
       tag: latest
-
   sampledata:
     image:
       repository: ghcr.io/23120049/yas-backoffice-bff
@@ -96,7 +79,6 @@ ui:
     image:
       repository: ghcr.io/23120049/yas-storefront
       tag: latest
-  
   backoffice:
     image:
       repository: ghcr.io/23120049/yas-backoffice

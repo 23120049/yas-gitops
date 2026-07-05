@@ -11,7 +11,7 @@ spec:
     path: deploy/zookeeper
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: zookeeper
+    namespace: infra
   syncPolicy:
     automated:
       prune: true
