@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: quay.io/strimzi-helm
     chart: strimzi-kafka-operator
-    targetRevision: "1.0.1"
+    targetRevision: "1.1.0"
     helm:
       values: |
         watchNamespaces:
