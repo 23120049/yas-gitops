@@ -94,49 +94,25 @@ IMAGE_TAG: latest
 
 ## Dev và staging
 
-Hai môi trường dùng chung infrastructure:
-
-- PostgreSQL namespace: `postgres`
-- Kafka namespace: `kafka`
-- Elasticsearch/Kibana namespace: `elasticsearch`
-- Keycloak namespace: `keycloak`
-- Observability namespace: `observability`
+Hai môi trường dùng chung infrastructure trong namespace `infra`.
 
 Hai môi trường tách application namespace:
 
-- Dev: `yas-dev`
-- Staging: `yas-staging`
+- Dev: `dev`
+- Staging: `staging`
 
 Vì chạy song song hai môi trường trên cùng cluster, các public host phải tách nhau. Dev dùng `dev-*`, staging dùng `staging-*`. Infrastructure host như Keycloak, pgAdmin, Kibana, Grafana có thể dùng chung.
 
-## Host file
+## DNS and ingress
 
-Thay `100.108.98.79` bằng IP Tailscale của node k3s nếu IP thay đổi.
+Istio is the only external ingress. K3s ServiceLB must advertise
+`istio-ingressgateway` on node D at Tailscale IP `100.108.98.79`. Public names
+embed that IP through `sslip.io`, so clients on the tailnet do not edit their
+hosts file. See `hostnames.txt` for the URL list.
 
-```text
-# ============================================
-# YAS - Yet Another Shop (k3s cluster)
-# Trỏ về node: 100.108.98.79
-# ============================================
-
-# --- Dev ---
-100.108.98.79   dev-storefront.yas.local.com
-100.108.98.79   dev-backoffice.yas.local.com
-100.108.98.79   dev-api.yas.local.com
-
-# --- Staging ---
-100.108.98.79   staging-storefront.yas.local.com
-100.108.98.79   staging-backoffice.yas.local.com
-100.108.98.79   staging-api.yas.local.com
-
-# --- Shared infrastructure ---
-100.108.98.79   identity.yas.local.com
-100.108.98.79   pgadmin.yas.local.com
-100.108.98.79   kibana.yas.local.com
-100.108.98.79   grafana.yas.local.com
-100.108.98.79   akhq.yas.local.com
-100.108.98.79   pgoperator.yas.local.com
-```
+ServiceLB controls where the gateway is advertised; `sslip.io` supplies DNS.
+If node D's Tailscale IP changes, replace both `100.108.98.79` and
+`100-108-98-79` in this repository before deployment.
 
 ## One-command bootstrap
 
@@ -144,9 +120,8 @@ Thay `100.108.98.79` bằng IP Tailscale của node k3s nếu IP thay đổi.
 
 - k3s cluster đã chạy.
 - Máy local truy cập được cluster qua `kubectl`.
-- Argo CD đã được cài trong namespace `argocd`.
 - Argo CD có quyền đọc repo `23120049/yas-gitops` và `23120049/yas-helm`.
-- Ingress controller đã sẵn sàng trên cluster.
+- `istio-ingressgateway` được ServiceLB advertise trên node D.
 
 Commit and push the `yas-gitops` and `yas-helm` state first, then run one command from a Bash shell:
 
@@ -154,13 +129,18 @@ Commit and push the `yas-gitops` and `yas-helm` state first, then run one comman
 ./scripts/bootstrap.sh
 ```
 
-This is the GitOps equivalent of the old YAS deployment scripts. It is idempotent and stops at the first unhealthy phase instead of launching dependent workloads prematurely:
+This is the GitOps equivalent of the old YAS deployment scripts. Run it from
+`main` after the deployment changes have been merged and pushed. Argo CD reads
+remote `main`, so feature branches are review artifacts rather than deployment
+sources. The command is idempotent and stops at the first unhealthy phase:
 
 ```text
 prerequisites and Argo CD
   -> operators
-  -> infrastructure services
+  -> core infrastructure (PostgreSQL, Redis, Elasticsearch)
   -> PostgreSQL database initialization
+  -> dependent platform (Kafka/Connect, Keycloak, pgAdmin)
+  -> Debezium connectors
   -> shared dev/staging configuration
   -> dev/staging workloads
   -> Istio routing policies
@@ -168,7 +148,19 @@ prerequisites and Argo CD
 
 The timeout for each gate defaults to 15 minutes. Override it with `BOOTSTRAP_TIMEOUT=30m`. When prerequisites are already installed, use `SKIP_PREREQUISITES=true ./scripts/bootstrap.sh`.
 
-Infrastructure gating checks both Argo CD health and runtime readiness. PostgreSQL, Redis, Kafka, Kafka Connect, Elasticsearch, Kibana, Keycloak, pgAdmin, and ZooKeeper must report ready before database initialization starts. The configuration phase must then create the shared ConfigMap and credential Secret in both application namespaces before any workload Application is enabled.
+If GHCR packages are private, provide credentials to the same command; the
+script creates pull secrets after namespaces exist and before workloads start:
+
+```bash
+GHCR_USERNAME=<user> GHCR_TOKEN=<read-packages-token> ./scripts/bootstrap.sh
+```
+
+Infrastructure gating checks both Argo CD health and runtime readiness.
+PostgreSQL, Redis, Elasticsearch, and Kibana must report ready before
+database initialization. Kafka and its Debezium connectors are intentionally
+deployed afterward because they consume the newly-created product databases.
+Keycloak, pgAdmin, and Kafka must then become ready before shared application
+configuration and workloads are enabled.
 
 Do not use `kubectl apply -f bootstrap/root.yaml` for a new deployment. That legacy manifest starts all roots concurrently and bypasses readiness gates.
 
@@ -185,8 +177,8 @@ Sau bootstrap, kiểm tra:
 ```bash
 kubectl get applications -n argocd
 kubectl get ns
-kubectl get pods -n yas-dev
-kubectl get pods -n yas-staging
+kubectl get pods -n dev
+kubectl get pods -n staging
 ```
 
 ## Multi-source và image tag
@@ -267,22 +259,22 @@ Trích từ file `yas-helm/deploy/keycloak/keycloak/values.yaml`:
 
 ```yaml
 backofficeRedirectUrls:
-  - http://dev-backoffice.yas.local.com
-  - http://staging-backoffice.yas.local.com
+  - http://dev-backoffice.yas.100-108-98-79.sslip.io
+  - http://staging-backoffice.yas.100-108-98-79.sslip.io
 storefrontRedirectUrls:
-  - http://dev-storefront.yas.local.com
-  - http://staging-storefront.yas.local.com
+  - http://dev-storefront.yas.100-108-98-79.sslip.io
+  - http://staging-storefront.yas.100-108-98-79.sslip.io
 apiRedirectUrls:
-  - http://dev-api.yas.local.com
-  - http://staging-api.yas.local.com
+  - http://dev-api.yas.100-108-98-79.sslip.io
+  - http://staging-api.yas.100-108-98-79.sslip.io
 ```
 
 ## Istio
 
 Istio được quản lý qua GitOps:
 
-- `istio/dev`: policy cho namespace `yas-dev`.
-- `istio/staging`: policy cho namespace `yas-staging`.
+- `istio/dev`: policy cho namespace `dev`.
+- `istio/staging`: policy cho namespace `staging`.
 
 Bạn có thể dùng chung control plane Istio cho cả hai môi trường. Phần cần tách là namespace, workload selector, AuthorizationPolicy và VirtualService/DestinationRule theo service host nội bộ của từng namespace.
 
@@ -313,22 +305,21 @@ kubectl get destinationrule -A
 ```bash
 kubectl get pods -n postgres
 kubectl get pods -n keycloak
-kubectl get pods -n yas-dev
-kubectl get pods -n yas-staging
+kubectl get pods -n dev
+kubectl get pods -n staging
 kubectl get ingress -A
 ```
 
 Kiểm tra URL:
 
-- `http://dev-storefront.yas.local.com`
-- `http://dev-backoffice.yas.local.com`
-- `http://dev-api.yas.local.com/swagger-ui`
-- `http://staging-storefront.yas.local.com`
-- `http://staging-backoffice.yas.local.com`
-- `http://staging-api.yas.local.com/swagger-ui`
-- `http://identity.yas.local.com`
-- `http://grafana.yas.local.com`
-- `http://kibana.yas.local.com`
+- `http://dev-storefront.yas.100-108-98-79.sslip.io`
+- `http://dev-backoffice.yas.100-108-98-79.sslip.io`
+- `http://dev-api.yas.100-108-98-79.sslip.io/swagger-ui`
+- `http://staging-storefront.yas.100-108-98-79.sslip.io`
+- `http://staging-backoffice.yas.100-108-98-79.sslip.io`
+- `http://staging-api.yas.100-108-98-79.sslip.io/swagger-ui`
+- `http://identity.yas.100-108-98-79.sslip.io`
+- `http://kibana.yas.100-108-98-79.sslip.io`
 
 ## Ghi chú còn cần xác minh trên cluster
 

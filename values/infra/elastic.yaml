@@ -9,5 +9,5 @@ elasticsearch:
       cpu: "1000m"
 kibana:
   ingress:
-    className: nginx
-    hostname: kibana.yas.local.com
+    enabled: false
+    hostname: kibana.yas.100-108-98-79.sslip.io

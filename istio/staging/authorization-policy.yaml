@@ -6,12 +6,11 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: cart
+      app.kubernetes.io/name: cart
   action: ALLOW
   rules:
     - from:
         - source:
-            # Tam thoi de ten service account nhu du doan. Can verify lai khi app len.
             principals:
               - "cluster.local/ns/staging/sa/storefront-bff"
               - "cluster.local/ns/staging/sa/order"

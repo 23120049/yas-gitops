@@ -1,0 +1,74 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: yas-web-staging
+  namespace: staging
+spec:
+  hosts:
+    - staging-storefront.yas.100-108-98-79.sslip.io
+    - staging-backoffice.yas.100-108-98-79.sslip.io
+  gateways:
+    - istio-system/yas-gateway
+  http:
+    - match:
+        - authority:
+            exact: staging-storefront.yas.100-108-98-79.sslip.io
+      route:
+        - destination:
+            host: storefront-bff.staging.svc.cluster.local
+            port:
+              number: 80
+    - match:
+        - authority:
+            exact: staging-backoffice.yas.100-108-98-79.sslip.io
+      route:
+        - destination:
+            host: backoffice-bff.staging.svc.cluster.local
+            port:
+              number: 80
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: yas-api-staging
+  namespace: staging
+spec:
+  hosts:
+    - staging-api.yas.100-108-98-79.sslip.io
+  gateways:
+    - istio-system/yas-gateway
+  http:
+    - match: [{ uri: { prefix: /swagger-ui } }]
+      route: [{ destination: { host: swagger-ui.staging.svc.cluster.local, port: { number: 8080 } } }]
+    - match: [{ uri: { prefix: /payment-paypal } }]
+      route: [{ destination: { host: payment-paypal.staging.svc.cluster.local, port: { number: 80 } } }]
+    - match: [{ uri: { prefix: /recommendation } }]
+      route: [{ destination: { host: recommendation.staging.svc.cluster.local, port: { number: 80 } } }]
+    - match: [{ uri: { prefix: /sampledata } }]
+      route: [{ destination: { host: sampledata.staging.svc.cluster.local, port: { number: 80 } } }]
+    - match: [{ uri: { prefix: /promotion } }]
+      route: [{ destination: { host: promotion.staging.svc.cluster.local, port: { number: 80 } } }]
+    - match: [{ uri: { prefix: /inventory } }]
+      route: [{ destination: { host: inventory.staging.svc.cluster.local, port: { number: 80 } } }]
+    - match: [{ uri: { prefix: /customer } }]
+      route: [{ destination: { host: customer.staging.svc.cluster.local, port: { number: 80 } } }]
+    - match: [{ uri: { prefix: /location } }]
+      route: [{ destination: { host: location.staging.svc.cluster.local, port: { number: 80 } } }]
+    - match: [{ uri: { prefix: /product } }]
+      route: [{ destination: { host: product.staging.svc.cluster.local, port: { number: 80 } } }]
+    - match: [{ uri: { prefix: /payment } }]
+      route: [{ destination: { host: payment.staging.svc.cluster.local, port: { number: 80 } } }]
+    - match: [{ uri: { prefix: /webhook } }]
+      route: [{ destination: { host: webhook.staging.svc.cluster.local, port: { number: 80 } } }]
+    - match: [{ uri: { prefix: /search } }]
+      route: [{ destination: { host: search.staging.svc.cluster.local, port: { number: 80 } } }]
+    - match: [{ uri: { prefix: /rating } }]
+      route: [{ destination: { host: rating.staging.svc.cluster.local, port: { number: 80 } } }]
+    - match: [{ uri: { prefix: /order } }]
+      route: [{ destination: { host: order.staging.svc.cluster.local, port: { number: 80 } } }]
+    - match: [{ uri: { prefix: /media } }]
+      route: [{ destination: { host: media.staging.svc.cluster.local, port: { number: 80 } } }]
+    - match: [{ uri: { prefix: /cart } }]
+      route: [{ destination: { host: cart.staging.svc.cluster.local, port: { number: 80 } } }]
+    - match: [{ uri: { prefix: /tax } }]
+      route: [{ destination: { host: tax.staging.svc.cluster.local, port: { number: 80 } } }]

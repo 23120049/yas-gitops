@@ -1,20 +1,19 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: yas-bootstrap-configuration
+  name: yas-bootstrap-connectors
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/23120049/yas-gitops.git
     targetRevision: main
-    path: applications
+    path: infra
     directory:
-      recurse: true
-      include: '{dev/namespace.yaml,dev/configuration.yaml,staging/namespace.yaml,staging/configuration.yaml}'
+      include: debezium-connectors.yaml
   destination:
     server: https://kubernetes.default.svc
-    namespace: argocd
+    namespace: infra
   syncPolicy:
     automated:
       prune: true

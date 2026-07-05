@@ -14,15 +14,15 @@ spec:
         applicationConfig:
           springdoc:
             oauthflow:
-              authorization-url: http://identity.yas.local.com/realms/Yas/protocol/openid-connect/auth
-              token-url: http://identity.yas.local.com/realms/Yas/protocol/openid-connect/token
+              authorization-url: http://identity.yas.100-108-98-79.sslip.io/realms/Yas/protocol/openid-connect/auth
+              token-url: http://identity.yas.100-108-98-79.sslip.io/realms/Yas/protocol/openid-connect/token
         mediaApplicationConfig:
           yas:
-            publicUrl: http://staging-api.yas.local.com/media
+            publicUrl: http://staging-api.yas.100-108-98-79.sslip.io/media
         paymentPaypalApplicationConfig:
           yas:
             public:
-              url: http://staging-storefront.yas.local.com/complete-payment
+              url: http://staging-storefront.yas.100-108-98-79.sslip.io/complete-payment
         sampledataApplicationConfig:
           spring:
             datasource:

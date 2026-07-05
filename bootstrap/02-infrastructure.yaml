@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: yas-bootstrap-infrastructure
+  name: yas-bootstrap-core-infrastructure
   namespace: argocd
 spec:
   project: default
@@ -10,7 +10,7 @@ spec:
     targetRevision: main
     path: infra
     directory:
-      include: '{postgresql.yaml,redis.yaml,kafka.yaml,elasticsearch.yaml,keycloak.yaml,pgadmin.yaml,zookeeper.yaml}'
+      include: '{postgresql.yaml,redis.yaml,elasticsearch.yaml}'
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd

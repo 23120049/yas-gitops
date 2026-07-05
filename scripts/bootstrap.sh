@@ -49,7 +49,35 @@ wait_for_ready_pods() {
     --for=condition=Ready --timeout="${TIMEOUT}"
 }
 
+configure_ghcr_pull_secret() {
+  local namespace="$1"
+
+  if [[ -z "${GHCR_TOKEN:-}" ]]; then
+    return
+  fi
+  if [[ -z "${GHCR_USERNAME:-}" ]]; then
+    echo "GHCR_USERNAME is required when GHCR_TOKEN is set." >&2
+    exit 1
+  fi
+
+  kubectl create secret docker-registry ghcr-pull -n "${namespace}" \
+    --docker-server=ghcr.io \
+    --docker-username="${GHCR_USERNAME}" \
+    --docker-password="${GHCR_TOKEN}" \
+    --dry-run=client -o yaml | kubectl apply -f -
+  kubectl patch serviceaccount default -n "${namespace}" --type=merge \
+    -p '{"imagePullSecrets":[{"name":"ghcr-pull"}]}'
+}
+
 require_command kubectl
+require_command git
+
+current_branch="$(git -C "${REPO_ROOT}" branch --show-current)"
+if [[ "${current_branch}" != "main" && "${ALLOW_NON_MAIN_BOOTSTRAP:-false}" != "true" ]]; then
+  echo "Bootstrap deploys the GitOps state from remote main, but the current branch is ${current_branch}." >&2
+  echo "Merge this branch first, then run from main. Use ALLOW_NON_MAIN_BOOTSTRAP=true only when remote main already contains the same commit." >&2
+  exit 1
+fi
 
 kubectl cluster-info >/dev/null
 
@@ -98,18 +126,13 @@ apply_phase 01-operators.yaml \
   postgres-operator strimzi-operator eck-operator keycloak-operator
 
 apply_phase 02-infrastructure.yaml \
-  yas-bootstrap-infrastructure \
-  postgresql redis kafka elasticsearch keycloak pgadmin zookeeper
+  yas-bootstrap-core-infrastructure \
+  postgresql redis elasticsearch
 
 wait_for_ready_pods infra 'cluster-name=postgresql' PostgreSQL
 wait_for_ready_pods infra 'app.kubernetes.io/instance=redis' Redis
-kubectl wait kafka/yas-kafka -n infra --for=condition=Ready --timeout="${TIMEOUT}"
-kubectl wait kafkaconnect/yas-connect -n infra --for=condition=Ready --timeout="${TIMEOUT}"
 wait_for_ready_pods infra 'elasticsearch.k8s.elastic.co/cluster-name=elasticsearch' Elasticsearch
 wait_for_ready_pods infra 'kibana.k8s.elastic.co/name=kibana' Kibana
-kubectl wait keycloak/keycloak -n infra --for=condition=Ready --timeout="${TIMEOUT}"
-wait_for_ready_pods infra 'app.kubernetes.io/instance=pgadmin' pgAdmin
-wait_for_ready_pods infra 'app.kubernetes.io/instance=zookeeper' ZooKeeper
 
 echo "Waiting for the PostgreSQL credentials required by initialization..."
 kubectl wait secret/yasadminuser.postgresql.credentials.postgresql.acid.zalan.do \
@@ -117,6 +140,21 @@ kubectl wait secret/yasadminuser.postgresql.credentials.postgresql.acid.zalan.do
 
 apply_phase 03-initialization.yaml yas-bootstrap-initialization
 kubectl wait job/postgres-init-job -n infra --for=condition=Complete --timeout="${TIMEOUT}"
+
+apply_phase 04-platform.yaml \
+  yas-bootstrap-platform \
+  kafka keycloak pgadmin
+
+kubectl wait kafka/yas-kafka -n infra --for=condition=Ready --timeout="${TIMEOUT}"
+kubectl wait kafkaconnect/yas-connect -n infra --for=condition=Ready --timeout="${TIMEOUT}"
+kubectl wait keycloak/keycloak -n infra --for=condition=Ready --timeout="${TIMEOUT}"
+wait_for_ready_pods infra 'app.kubernetes.io/instance=pgadmin' pgAdmin
+
+apply_phase 03-connectors.yaml yas-bootstrap-connectors
+kubectl wait kafkaconnector/debezium-connector-postgresql-product-db-dev \
+  -n infra --for=condition=Ready --timeout="${TIMEOUT}"
+kubectl wait kafkaconnector/debezium-connector-postgresql-product-db-staging \
+  -n infra --for=condition=Ready --timeout="${TIMEOUT}"
 
 apply_phase 04-configuration.yaml \
   yas-bootstrap-configuration \
@@ -127,6 +165,7 @@ for namespace in dev staging; do
     --for=create --timeout="${TIMEOUT}"
   kubectl wait secret/yas-postgresql-credentials-secret -n "${namespace}" \
     --for=create --timeout="${TIMEOUT}"
+  configure_ghcr_pull_secret "${namespace}"
 done
 
 apply_phase 05-workloads.yaml \

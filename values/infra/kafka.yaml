@@ -19,6 +19,7 @@ debeziumConnect:
   name: yas-connect
   image: ghcr.io/23120049/debezium-connect-postgresql:latest
   buildImage: false
+  connectorsEnabled: false
   resources:
     requests:
       cpu: 250m

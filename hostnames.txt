@@ -1,19 +1,17 @@
-# YAS Microservices Configuration - Hosts File
-# Point to the k3s cluster Tailscale IP: 100.108.98.79
+# No hosts-file changes are required.
+# sslip.io resolves the embedded address to node D's Tailscale IP: 100.108.98.79.
 
-# --- Dev Environment ---
-100.108.98.79   dev-api.yas.local.com
-100.108.98.79   dev-backoffice.yas.local.com
-100.108.98.79   dev-storefront.yas.local.com
+# Dev
+http://dev-api.yas.100-108-98-79.sslip.io
+http://dev-backoffice.yas.100-108-98-79.sslip.io
+http://dev-storefront.yas.100-108-98-79.sslip.io
 
-# --- Staging Environment ---
-100.108.98.79   staging-api.yas.local.com
-100.108.98.79   staging-backoffice.yas.local.com
-100.108.98.79   staging-storefront.yas.local.com
+# Staging
+http://staging-api.yas.100-108-98-79.sslip.io
+http://staging-backoffice.yas.100-108-98-79.sslip.io
+http://staging-storefront.yas.100-108-98-79.sslip.io
 
-# --- Shared Infrastructure ---
-100.108.98.79   identity.yas.local.com
-100.108.98.79   pgadmin.yas.local.com
-100.108.98.79   grafana.yas.local.com
-100.108.98.79   kibana.yas.local.com
-100.108.98.79   akhq.yas.local.com
+# Shared infrastructure
+http://identity.yas.100-108-98-79.sslip.io
+http://pgadmin.yas.100-108-98-79.sslip.io
+http://kibana.yas.100-108-98-79.sslip.io

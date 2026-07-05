@@ -11,7 +11,7 @@ spec:
     path: applications
     directory:
       recurse: true
-      include: '{dev/namespace.yaml,dev/services.yaml,staging/namespace.yaml,staging/services.yaml}'
+      include: '{dev/services.yaml,staging/services.yaml}'
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd

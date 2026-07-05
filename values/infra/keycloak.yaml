@@ -1,17 +1,18 @@
-hostname: identity.yas.local.com
+hostname: identity.yas.100-108-98-79.sslip.io
+ingress:
+  enabled: false
 backofficeRedirectUrls:
-  - http://dev-backoffice.yas.local.com
-  - http://staging-backoffice.yas.local.com
+  - http://dev-backoffice.yas.100-108-98-79.sslip.io
+  - http://staging-backoffice.yas.100-108-98-79.sslip.io
 storefrontRedirectUrls:
-  - http://dev-storefront.yas.local.com
-  - http://staging-storefront.yas.local.com
+  - http://dev-storefront.yas.100-108-98-79.sslip.io
+  - http://staging-storefront.yas.100-108-98-79.sslip.io
 apiRedirectUrls:
-  - http://dev-api.yas.local.com
-  - http://staging-api.yas.local.com
+  - http://dev-api.yas.100-108-98-79.sslip.io
+  - http://staging-api.yas.100-108-98-79.sslip.io
 postgresql:
   username: yasadminuser
   password: admin
 bootstrapAdmin:
   username: admin
   password: admin
-
