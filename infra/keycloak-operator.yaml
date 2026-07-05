@@ -9,7 +9,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/23120049/yas-gitops.git
-    targetRevision: main
+    targetRevision: vibebranch
     path: operators/keycloak
   destination:
     server: https://kubernetes.default.svc

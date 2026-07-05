@@ -7,13 +7,13 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: main
+      targetRevision: vibebranch
       path: deploy/postgres/pgadmin
       helm:
         valueFiles:
           - $values/values/infra/pgadmin.yaml
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: main
+      targetRevision: vibebranch
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'

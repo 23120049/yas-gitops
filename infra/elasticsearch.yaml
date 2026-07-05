@@ -16,7 +16,7 @@ spec:
 
     - repoURL: 'https://github.com/23120049/yas-helm.git'
 
-      targetRevision: main
+      targetRevision: vibebranch
 
       path: deploy/elasticsearch/elasticsearch-cluster
 
@@ -28,7 +28,7 @@ spec:
 
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
 
-      targetRevision: main
+      targetRevision: vibebranch
 
       ref: values
 

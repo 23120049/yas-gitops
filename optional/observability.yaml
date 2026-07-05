@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/23120049/yas-helm.git
-    targetRevision: main
+    targetRevision: vibebranch
     path: deploy/observability/opentelemetry
   destination:
     server: https://kubernetes.default.svc
@@ -22,7 +22,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/23120049/yas-helm.git
-    targetRevision: main
+    targetRevision: vibebranch
     path: deploy/observability/grafana
   destination:
     server: https://kubernetes.default.svc
