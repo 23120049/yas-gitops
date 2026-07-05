@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/23120049/yas-gitops.git
     targetRevision: vibebranch
-    path: infra/core
+    path: infra
     directory:
       include: '{postgresql.yaml,redis.yaml,elasticsearch.yaml}'
   destination:
