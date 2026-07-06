@@ -3,7 +3,7 @@ kafka:
   nodePoolName: yas-kafka-pool
   version: 4.2.0
   metadataVersion: "4.2"
-  replicas: 3
+  replicas: 1
   storageSize: 20Gi
   resources:
     requests:
