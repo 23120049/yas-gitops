@@ -17,7 +17,7 @@ postgresql:
   password: admin
 debeziumConnect:
   name: yas-connect
-  image: ghcr.io/23120049/debezium-connect-postgresql:latest
+  image: ghcr.io/23120049/yas-kafka-connect:latest
   buildImage: true
   connectorsEnabled: false
   resources:
