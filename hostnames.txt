@@ -1,18 +1,18 @@
-# Replace <NODE_D_TAILSCALE_IP> with the address advertised by:
+# Address advertised by:
 # kubectl get service istio-ingressgateway -n istio-system \
 #   -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
 
 # Dev
-<NODE_D_TAILSCALE_IP> dev-api.yas.local.com
-<NODE_D_TAILSCALE_IP> dev-backoffice.yas.local.com
-<NODE_D_TAILSCALE_IP> dev-storefront.yas.local.com
+100.124.113.25 dev-api.yas.local.com
+100.124.113.25 dev-backoffice.yas.local.com
+100.124.113.25 dev-storefront.yas.local.com
 
 # Staging
-<NODE_D_TAILSCALE_IP> staging-api.yas.local.com
-<NODE_D_TAILSCALE_IP> staging-backoffice.yas.local.com
-<NODE_D_TAILSCALE_IP> staging-storefront.yas.local.com
+100.124.113.25 staging-api.yas.local.com
+100.124.113.25 staging-backoffice.yas.local.com
+100.124.113.25 staging-storefront.yas.local.com
 
 # Shared infrastructure
-<NODE_D_TAILSCALE_IP> identity.yas.local.com
-<NODE_D_TAILSCALE_IP> pgadmin.yas.local.com
-<NODE_D_TAILSCALE_IP> kibana.yas.local.com
+100.124.113.25 identity.yas.local.com
+100.124.113.25 pgadmin.yas.local.com
+100.124.113.25 kibana.yas.local.com
