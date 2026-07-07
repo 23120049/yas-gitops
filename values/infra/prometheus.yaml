@@ -26,7 +26,7 @@ grafana:
       root_url: http://grafana.yas.local.com
       
   ingress:
-    ingressClassName: 
+    ingressClassName: traefik
     enabled: true
     hosts:
       - *hostname
