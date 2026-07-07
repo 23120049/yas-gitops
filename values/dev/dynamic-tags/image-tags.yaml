@@ -57,7 +57,7 @@ backend:
   search:
     image:
       repository: ghcr.io/23120049/yas-search
-      tag: latest
+      tag: 8c70ebb6eef1ac88a50c069b0dadc803bb846ddf
   storefront-bff:
     image:
       repository: ghcr.io/23120049/yas-storefront-bff
