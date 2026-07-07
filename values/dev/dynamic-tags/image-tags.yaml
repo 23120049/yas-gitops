@@ -45,7 +45,7 @@ backend:
   rating:
     image:
       repository: ghcr.io/23120049/yas-rating
-      tag: latest
+      tag: 8c70ebb6eef1ac88a50c069b0dadc803bb846ddf
   recommendation:
     image:
       repository: ghcr.io/23120049/yas-recommendation
