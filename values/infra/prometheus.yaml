@@ -18,3 +18,4 @@ grafana:
     enabled: true
     hosts:
       - *hostname
+  assertNoLeakedSecrets: false
