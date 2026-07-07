@@ -38,6 +38,7 @@ data:
     )
 
     export PGPASSWORD="$POSTGRES_PASSWORD"
+    export PGSSLMODE=require
 
     echo "Waiting for PostgreSQL service to be ready..."
     until pg_isready -h "$POSTGRES_HOST" -p 5432 -U "$POSTGRES_USER"; do
