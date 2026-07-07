@@ -16,6 +16,22 @@ spec:
             oauthflow:
               authorization-url: http://identity.yas.local.com/realms/Yas/protocol/openid-connect/auth
               token-url: http://identity.yas.local.com/realms/Yas/protocol/openid-connect/token
+        backofficeBffExtraConfig:
+          spring:
+            security:
+              oauth2:
+                client:
+                  provider:
+                    keycloak:
+                      issuer-uri: ""
+        storefrontBffExtraConfig:
+          spring:
+            security:
+              oauth2:
+                client:
+                  provider:
+                    keycloak:
+                      issuer-uri: ""
         mediaApplicationConfig:
           yas:
             publicUrl: http://staging-api.yas.local.com/media
