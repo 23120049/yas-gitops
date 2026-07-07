@@ -1,4 +1,4 @@
 backend:
   image:
     repository: ghcr.io/23120049/yas-backoffice-bff
-    tag: latest
+    tag: 00d3eca524a4edc0ba5f340b2b949636cb918f23
