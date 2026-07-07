@@ -61,7 +61,7 @@ backend:
   storefront-bff:
     image:
       repository: ghcr.io/23120049/yas-storefront-bff
-      tag: 00d3eca524a4edc0ba5f340b2b949636cb918f23
+      tag: 8c70ebb6eef1ac88a50c069b0dadc803bb846ddf
   backoffice-bff:
     image:
       repository: ghcr.io/23120049/yas-backoffice-bff
