@@ -9,7 +9,7 @@ backend:
   customer:
     image:
       repository: ghcr.io/23120049/yas-customer
-      tag: latest
+      tag: 8c70ebb6eef1ac88a50c069b0dadc803bb846ddf
   inventory:
     image:
       repository: ghcr.io/23120049/yas-inventory
