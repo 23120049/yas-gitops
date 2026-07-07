@@ -107,7 +107,8 @@ Vì chạy song song hai môi trường trên cùng cluster, các public host ph
 
 Istio is the only external ingress. K3s ServiceLB must advertise
 `istio-ingressgateway` on node D. Each teammate maps the `*.yas.local.com`
-names in `hostnames.txt` to the IP reported by the gateway Service.
+names in `hostnames.txt` to `100.124.113.25`, the IP advertised by the gateway
+Service.
 
 Use the Linux/WSL Tailscale IP when that environment directly runs k3s and
 ServiceLB advertises it. Use the Windows Tailscale IP only when Windows owns
