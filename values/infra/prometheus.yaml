@@ -1,5 +1,13 @@
 hostname: &hostname grafana.yas.local.com
 
+syncPolicy:
+  automated:
+    prune: true
+    selfHeal: true
+  syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true
+
 prometheus:
   prometheusSpec:
     enableRemoteWriteReceiver: true
