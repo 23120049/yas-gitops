@@ -9,13 +9,13 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: vibebranch
+      targetRevision: main
       path: deploy/postgres/postgresql
       helm:
         valueFiles:
           - $values/values/infra/postgres.yaml
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: vibebranch
+      targetRevision: main
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'

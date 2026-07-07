@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: 'https://github.com/23120049/yas-helm.git'
-    targetRevision: vibebranch
+    targetRevision: main
     path: charts/yas-configuration
     helm:
       values: |

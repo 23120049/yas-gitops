@@ -16,7 +16,7 @@ spec:
         valueFiles:
           - $values/values/infra/redis.yaml
     - repoURL: https://github.com/23120049/yas-gitops.git
-      targetRevision: vibebranch
+      targetRevision: main
       ref: values
   destination:
     server: https://kubernetes.default.svc

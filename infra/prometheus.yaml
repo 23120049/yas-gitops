@@ -15,7 +15,7 @@ spec:
         valueFiles:
           - $values/values/infra/prometheus.yaml
     - repoURL: https://github.com/23120049/yas-gitops.git
-      targetRevision: vibebranch
+      targetRevision: main
       ref: values
   destination:
     server: https://kubernetes.default.svc

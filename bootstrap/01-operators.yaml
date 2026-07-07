@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/23120049/yas-gitops.git
-    targetRevision: vibebranch
+    targetRevision: main
     path: infra
     directory:
       include: '{postgres-operator.yaml,strimzi-operator.yaml,eck-operator.yaml,keycloak-operator.yaml}'
