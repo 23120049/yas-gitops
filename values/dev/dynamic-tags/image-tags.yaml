@@ -21,7 +21,7 @@ backend:
   media:
     image:
       repository: ghcr.io/23120049/yas-media
-      tag: a6bf5759de72bd9dee5f74a3d81ec038ba872cfe
+      tag: 8c70ebb6eef1ac88a50c069b0dadc803bb846ddf
   order:
     image:
       repository: ghcr.io/23120049/yas-order
