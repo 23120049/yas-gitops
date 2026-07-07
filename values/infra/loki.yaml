@@ -8,6 +8,7 @@ loki:
   commonConfig:
     replication_factor: 1
   auth_enabled: false
+  useTestSchema: true
 test:
   enabled: false
 storage:
