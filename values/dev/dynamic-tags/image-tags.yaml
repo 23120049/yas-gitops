@@ -37,7 +37,7 @@ backend:
   product:
     image:
       repository: ghcr.io/23120049/yas-product
-      tag: latest
+      tag: 8c70ebb6eef1ac88a50c069b0dadc803bb846ddf
   promotion:
     image:
       repository: ghcr.io/23120049/yas-promotion
