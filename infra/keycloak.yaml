@@ -1,20 +1,28 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: keycloak
-  namespace: argocd
-spec:
-  project: default
-  source:
-    repoURL: 'https://github.com/23120049/yas-helm.git'
-    targetRevision: HEAD
-    path: deploy/keycloak/keycloak
-  destination:
-    server: 'https://kubernetes.default.svc'
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: keycloak
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  project: default
+  sources:
+    - repoURL: https://github.com/23120049/yas-helm.git
+      targetRevision: vibebranch
+      path: deploy/keycloak/keycloak
+      helm:
+        valueFiles:
+          - $values/values/infra/keycloak.yaml
+    - repoURL: https://github.com/23120049/yas-gitops.git
+      targetRevision: vibebranch
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
     namespace: infra
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
-      - CreateNamespace=true
+      - CreateNamespace=true

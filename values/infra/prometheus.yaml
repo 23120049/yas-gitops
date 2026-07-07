@@ -1,20 +1,34 @@
 hostname: &hostname grafana.yas.local.com
+
+syncPolicy:
+  automated:
+    prune: true
+    selfHeal: true
+  syncOptions:
+    - CreateNamespace=true
+    - ServerSideApply=true
+
 prometheus:
   prometheusSpec:
     enableRemoteWriteReceiver: true
+
 grafana:
-  grafana.ini:
-    database:
-      type: postgres
-      host: postgresql.postgres:5432
-      name: grafana
-      user: yasadminuser
-      password: admin
-      ssl_mode: require
   adminUser: admin
   adminPassword: admin
+
+  grafana.ini:
+    database:
+      type: sqlite3
+      path: grafana.db
+
+    server:
+      domain: grafana.yas.local.com
+      root_url: http://grafana.yas.local.com
+      
   ingress:
-    ingressClassName: nginx
+    ingressClassName: traefik
     enabled: true
     hosts:
       - *hostname
+    path: /
+    pathType: Prefix

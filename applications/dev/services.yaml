@@ -1,55 +1,13 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: yas-configuration-dev
-  namespace: argocd
-spec:
-  project: default
-  source:
-    repoURL: 'https://github.com/23120049/yas-helm.git'
-    targetRevision: HEAD
-    path: charts/yas-configuration
-    helm:
-      values: |
-        applicationConfig:
-          springdoc:
-            oauthflow:
-              authorization-url: http://identity.yas.local.com/realms/Yas/protocol/openid-connect/auth
-              token-url: http://identity.yas.local.com/realms/Yas/protocol/openid-connect/token
-        mediaApplicationConfig:
-          yas:
-            publicUrl: http://dev-api.yas.local.com/media
-        paymentPaypalApplicationConfig:
-          yas:
-            public:
-              url: http://dev-storefront.yas.local.com/complete-payment
-        sampledataApplicationConfig:
-          spring:
-            datasource:
-              product:
-                url: jdbc:postgresql://postgresql.infra:5432/product_dev
-              media:
-                url: jdbc:postgresql://postgresql.infra:5432/media_dev
-  destination:
-    server: 'https://kubernetes.default.svc'
-    namespace: dev
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
   name: backoffice-bff-dev
   namespace: argocd
 spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       path: charts/backoffice-bff
       helm:
         valueFiles:
@@ -57,9 +15,10 @@ spec:
         values: |
           backend:
             ingress:
+              enabled: false
               host: dev-backoffice.yas.local.com
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -80,13 +39,13 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       path: charts/backoffice-ui
       helm:
         valueFiles:
           - $values/values/dev/dynamic-tags/backoffice.yaml
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -107,7 +66,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       path: charts/storefront-bff
       helm:
         valueFiles:
@@ -115,9 +74,10 @@ spec:
         values: |
           backend:
             ingress:
+              enabled: false
               host: dev-storefront.yas.local.com
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -138,7 +98,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       path: charts/storefront-ui
       helm:
         valueFiles:
@@ -149,7 +109,7 @@ spec:
               - name: API_BASE_PATH
                 value: http://dev-storefront.yas.local.com/api
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -170,12 +130,13 @@ spec:
   project: default
   source:
     repoURL: 'https://github.com/23120049/yas-helm.git'
-    targetRevision: HEAD
+    targetRevision: vibebranch
     path: charts/swagger-ui
     helm:
       values: |
         urls: "[{ url: 'http://dev-api.yas.local.com/product/v3/api-docs', name: 'Product' }, { url: 'http://dev-api.yas.local.com/media/v3/api-docs', name: 'Media' }, { url: 'http://dev-api.yas.local.com/customer/v3/api-docs', name: 'Customer' }, { url: 'http://dev-api.yas.local.com/cart/v3/api-docs', name: 'Cart' }, { url: 'http://dev-api.yas.local.com/rating/v3/api-docs', name: 'Rating' }, { url: 'http://dev-api.yas.local.com/order/v3/api-docs', name: 'Order' }, { url: 'http://dev-api.yas.local.com/payment/v3/api-docs', name: 'Payment' }, { url: 'http://dev-api.yas.local.com/location/v3/api-docs', name: 'Location' }, { url: 'http://dev-api.yas.local.com/inventory/v3/api-docs', name: 'Inventory' }, { url: 'http://dev-api.yas.local.com/tax/v3/api-docs', name: 'Tax' }, { url: 'http://dev-api.yas.local.com/promotion/v3/api-docs', name: 'Promotion' }, { url: 'http://dev-api.yas.local.com/search/v3/api-docs', name: 'Search' }]"
         ingress:
+          enabled: false
           host: dev-api.yas.local.com
           hosts:
             - host: dev-api.yas.local.com
@@ -201,7 +162,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       path: charts/cart
       helm:
         valueFiles:
@@ -211,7 +172,7 @@ spec:
             databaseName: cart_dev
             databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -232,7 +193,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       path: charts/customer
       helm:
         valueFiles:
@@ -242,7 +203,7 @@ spec:
             databaseName: customer_dev
             databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -263,7 +224,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       path: charts/inventory
       helm:
         valueFiles:
@@ -273,7 +234,7 @@ spec:
             databaseName: inventory_dev
             databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -294,7 +255,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       path: charts/location
       helm:
         valueFiles:
@@ -304,7 +265,7 @@ spec:
             databaseName: location_dev
             databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -325,7 +286,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       path: charts/media
       helm:
         valueFiles:
@@ -335,7 +296,7 @@ spec:
             databaseName: media_dev
             databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -356,7 +317,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       path: charts/order
       helm:
         valueFiles:
@@ -366,7 +327,7 @@ spec:
             databaseName: order_dev
             databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -387,7 +348,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       path: charts/payment
       helm:
         valueFiles:
@@ -397,7 +358,7 @@ spec:
             databaseName: payment_dev
             databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -418,7 +379,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       path: charts/payment-paypal
       helm:
         valueFiles:
@@ -428,7 +389,7 @@ spec:
             databaseName: payment_paypal_dev
             databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -449,7 +410,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       path: charts/product
       helm:
         valueFiles:
@@ -459,7 +420,7 @@ spec:
             databaseName: product_dev
             databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -480,7 +441,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       path: charts/promotion
       helm:
         valueFiles:
@@ -490,7 +451,7 @@ spec:
             databaseName: promotion_dev
             databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -511,7 +472,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       path: charts/rating
       helm:
         valueFiles:
@@ -521,7 +482,7 @@ spec:
             databaseName: rating_dev
             databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -542,7 +503,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       path: charts/recommendation
       helm:
         valueFiles:
@@ -555,7 +516,7 @@ spec:
               - name: PRODUCT_TOPIC_NAME
                 value: dbproductdev.public.product
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -576,7 +537,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       path: charts/search
       helm:
         valueFiles:
@@ -589,7 +550,7 @@ spec:
               - name: PRODUCT_TOPIC_NAME
                 value: dbproductdev.public.product
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -610,7 +571,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       path: charts/tax
       helm:
         valueFiles:
@@ -620,7 +581,7 @@ spec:
             databaseName: tax_dev
             databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -641,7 +602,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       path: charts/webhook
       helm:
         valueFiles:
@@ -654,7 +615,7 @@ spec:
               - name: WEBHOOK_INTEGRATION_KAFKA_PRODUCT_TOPIC_NAME
                 value: dbproductdev.public.product
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'
@@ -675,7 +636,7 @@ spec:
   project: default
   sources:
     - repoURL: 'https://github.com/23120049/yas-helm.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       path: charts/sampledata
       helm:
         valueFiles:
@@ -685,7 +646,7 @@ spec:
             databaseName: sampledata_dev
             databaseConnectionUrl: jdbc:postgresql://postgresql.infra:5432
     - repoURL: 'https://github.com/23120049/yas-gitops.git'
-      targetRevision: HEAD
+      targetRevision: vibebranch
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'

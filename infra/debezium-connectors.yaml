@@ -1,0 +1,45 @@
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaConnector
+metadata:
+  name: debezium-connector-postgresql-product-db-dev
+  namespace: infra
+  labels:
+    strimzi.io/cluster: yas-connect
+spec:
+  class: io.debezium.connector.postgresql.PostgresConnector
+  config:
+    database.hostname: postgresql.infra
+    database.port: 5432
+    database.user: ${secrets:postgresql.credentials:username}
+    database.password: ${secrets:postgresql.credentials:password}
+    topic.prefix: dbproductdev
+    database.dbname: product_dev
+    table.include.list: public.product
+    schema.include.list: public
+    key.converter.schemas.enable: false
+    value.converter.schemas.enable: false
+    value.converter: org.apache.kafka.connect.json.JsonConverter
+    key.converter: org.apache.kafka.connect.json.JsonConverter
+---
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaConnector
+metadata:
+  name: debezium-connector-postgresql-product-db-staging
+  namespace: infra
+  labels:
+    strimzi.io/cluster: yas-connect
+spec:
+  class: io.debezium.connector.postgresql.PostgresConnector
+  config:
+    database.hostname: postgresql.infra
+    database.port: 5432
+    database.user: ${secrets:postgresql.credentials:username}
+    database.password: ${secrets:postgresql.credentials:password}
+    topic.prefix: dbproductstaging
+    database.dbname: product_staging
+    table.include.list: public.product
+    schema.include.list: public
+    key.converter.schemas.enable: false
+    value.converter.schemas.enable: false
+    value.converter: org.apache.kafka.connect.json.JsonConverter
+    key.converter: org.apache.kafka.connect.json.JsonConverter

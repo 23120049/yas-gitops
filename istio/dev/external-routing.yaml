@@ -1,0 +1,176 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: yas-web-dev
+  namespace: dev
+spec:
+  hosts:
+    - dev-storefront.yas.local.com
+    - dev-backoffice.yas.local.com
+  gateways:
+    - istio-system/yas-gateway
+  http:
+    - match:
+        - authority:
+            exact: dev-storefront.yas.local.com
+      route:
+        - destination:
+            host: storefront-bff.dev.svc.cluster.local
+            port:
+              number: 80
+    - match:
+        - authority:
+            exact: dev-backoffice.yas.local.com
+      route:
+        - destination:
+            host: backoffice-bff.dev.svc.cluster.local
+            port:
+              number: 80
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: yas-api-dev
+  namespace: dev
+spec:
+  hosts:
+    - dev-api.yas.local.com
+  gateways:
+    - istio-system/yas-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /swagger-ui
+      route:
+        - destination:
+            host: swagger-ui.dev.svc.cluster.local
+            port:
+              number: 8080
+    - match:
+        - uri:
+            prefix: /payment-paypal
+      route:
+        - destination:
+            host: payment-paypal.dev.svc.cluster.local
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /recommendation
+      route:
+        - destination:
+            host: recommendation.dev.svc.cluster.local
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /sampledata
+      route:
+        - destination:
+            host: sampledata.dev.svc.cluster.local
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /promotion
+      route:
+        - destination:
+            host: promotion.dev.svc.cluster.local
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /inventory
+      route:
+        - destination:
+            host: inventory.dev.svc.cluster.local
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /customer
+      route:
+        - destination:
+            host: customer.dev.svc.cluster.local
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /location
+      route:
+        - destination:
+            host: location.dev.svc.cluster.local
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /product
+      route:
+        - destination:
+            host: product.dev.svc.cluster.local
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /payment
+      route:
+        - destination:
+            host: payment.dev.svc.cluster.local
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /webhook
+      route:
+        - destination:
+            host: webhook.dev.svc.cluster.local
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /search
+      route:
+        - destination:
+            host: search.dev.svc.cluster.local
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /rating
+      route:
+        - destination:
+            host: rating.dev.svc.cluster.local
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /order
+      route:
+        - destination:
+            host: order.dev.svc.cluster.local
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /media
+      route:
+        - destination:
+            host: media.dev.svc.cluster.local
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /cart
+      route:
+        - destination:
+            host: cart.dev.svc.cluster.local
+            port:
+              number: 80
+    - match:
+        - uri:
+            prefix: /tax
+      route:
+        - destination:
+            host: tax.dev.svc.cluster.local
+            port:
+              number: 80

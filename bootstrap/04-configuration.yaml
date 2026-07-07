@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: yas-bootstrap-configuration
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/23120049/yas-gitops.git
+    targetRevision: vibebranch
+    path: applications
+    directory:
+      recurse: true
+      include: '{dev/namespace.yaml,dev/configuration.yaml,staging/namespace.yaml,staging/configuration.yaml}'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

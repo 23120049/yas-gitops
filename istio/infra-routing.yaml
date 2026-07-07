@@ -1,0 +1,37 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: yas-infrastructure
+  namespace: infra
+spec:
+  hosts:
+    - identity.yas.local.com
+    - pgadmin.yas.local.com
+    - kibana.yas.local.com
+  gateways:
+    - istio-system/yas-gateway
+  http:
+    - match:
+        - authority:
+            exact: identity.yas.local.com
+      route:
+        - destination:
+            host: keycloak-service.infra.svc.cluster.local
+            port:
+              number: 80
+    - match:
+        - authority:
+            exact: pgadmin.yas.local.com
+      route:
+        - destination:
+            host: pgadmin.infra.svc.cluster.local
+            port:
+              number: 80
+    - match:
+        - authority:
+            exact: kibana.yas.local.com
+      route:
+        - destination:
+            host: kibana-kb-http.infra.svc.cluster.local
+            port:
+              number: 5601

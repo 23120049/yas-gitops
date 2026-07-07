@@ -1,0 +1,18 @@
+hostname: identity.yas.local.com
+ingress:
+  enabled: false
+backofficeRedirectUrls:
+  - http://dev-backoffice.yas.local.com
+  - http://staging-backoffice.yas.local.com
+storefrontRedirectUrls:
+  - http://dev-storefront.yas.local.com
+  - http://staging-storefront.yas.local.com
+apiRedirectUrls:
+  - http://dev-api.yas.local.com
+  - http://staging-api.yas.local.com
+postgresql:
+  username: yasadminuser
+  password: admin
+bootstrapAdmin:
+  username: admin
+  password: admin

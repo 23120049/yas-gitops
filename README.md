@@ -94,83 +94,92 @@ IMAGE_TAG: latest
 
 ## Dev và staging
 
-Hai môi trường dùng chung infrastructure:
-
-- PostgreSQL namespace: `postgres`
-- Kafka namespace: `kafka`
-- Elasticsearch/Kibana namespace: `elasticsearch`
-- Keycloak namespace: `keycloak`
-- Observability namespace: `observability`
+Hai môi trường dùng chung infrastructure trong namespace `infra`.
 
 Hai môi trường tách application namespace:
 
-- Dev: `yas-dev`
-- Staging: `yas-staging`
+- Dev: `dev`
+- Staging: `staging`
 
 Vì chạy song song hai môi trường trên cùng cluster, các public host phải tách nhau. Dev dùng `dev-*`, staging dùng `staging-*`. Infrastructure host như Keycloak, pgAdmin, Kibana, Grafana có thể dùng chung.
 
-## Host file
+## DNS and ingress
 
-Thay `100.108.98.79` bằng IP Tailscale của node k3s nếu IP thay đổi.
+Istio is the only external ingress. K3s ServiceLB must advertise
+`istio-ingressgateway` on node D. Each teammate maps the `*.yas.local.com`
+names in `hostnames.txt` to `100.124.113.25`, the IP advertised by the gateway
+Service.
 
-```text
-# ============================================
-# YAS - Yet Another Shop (k3s cluster)
-# Trỏ về node: 100.108.98.79
-# ============================================
+Use the Linux/WSL Tailscale IP when that environment directly runs k3s and
+ServiceLB advertises it. Use the Windows Tailscale IP only when Windows owns
+Tailscale and forwards ports 80/443 into the k3s environment. The authoritative
+value is `.status.loadBalancer.ingress[0].ip` on `istio-ingressgateway`.
 
-# --- Dev ---
-100.108.98.79   dev-storefront.yas.local.com
-100.108.98.79   dev-backoffice.yas.local.com
-100.108.98.79   dev-api.yas.local.com
-
-# --- Staging ---
-100.108.98.79   staging-storefront.yas.local.com
-100.108.98.79   staging-backoffice.yas.local.com
-100.108.98.79   staging-api.yas.local.com
-
-# --- Shared infrastructure ---
-100.108.98.79   identity.yas.local.com
-100.108.98.79   pgadmin.yas.local.com
-100.108.98.79   kibana.yas.local.com
-100.108.98.79   grafana.yas.local.com
-100.108.98.79   akhq.yas.local.com
-100.108.98.79   pgoperator.yas.local.com
-```
-
-## Argo CD bootstrap
+## One-command bootstrap
 
 Điều kiện trước khi chạy:
 
 - k3s cluster đã chạy.
 - Máy local truy cập được cluster qua `kubectl`.
-- Argo CD đã được cài trong namespace `argocd`.
 - Argo CD có quyền đọc repo `23120049/yas-gitops` và `23120049/yas-helm`.
-- Ingress controller đã sẵn sàng trên cluster.
+- `istio-ingressgateway` được ServiceLB advertise trên node D.
 
-Bootstrap:
+Commit and push the `yas-gitops` and `yas-helm` state first, then run one command from a Bash shell:
 
 ```bash
-kubectl apply -f bootstrap/root.yaml
+./scripts/bootstrap.sh
 ```
 
-Trích từ file `bootstrap/root.yaml`, Argo CD quản lý 5 root app:
+This is the GitOps equivalent of the old YAS deployment scripts. Run it from
+`main` after the deployment changes have been merged and pushed. Argo CD reads
+remote `main`, so feature branches are review artifacts rather than deployment
+sources. The command is idempotent and stops at the first unhealthy phase:
 
-```yaml
-path: infra
-path: applications/dev
-path: applications/staging
-path: istio/dev
-path: istio/staging
+```text
+prerequisites and Argo CD
+  -> operators
+  -> core infrastructure (PostgreSQL, Redis, Elasticsearch)
+  -> PostgreSQL database initialization
+  -> dependent platform (Kafka/Connect, Keycloak, pgAdmin)
+  -> Debezium connectors
+  -> shared dev/staging configuration
+  -> dev/staging workloads
+  -> Istio routing policies
 ```
+
+The timeout for each gate defaults to 15 minutes. Override it with `BOOTSTRAP_TIMEOUT=30m`. When prerequisites are already installed, use `SKIP_PREREQUISITES=true ./scripts/bootstrap.sh`.
+
+If GHCR packages are private, provide credentials to the same command; the
+script creates pull secrets after namespaces exist and before workloads start:
+
+```bash
+GHCR_USERNAME=<user> GHCR_TOKEN=<read-packages-token> ./scripts/bootstrap.sh
+```
+
+Infrastructure gating checks both Argo CD health and runtime readiness.
+PostgreSQL, Redis, Elasticsearch, and Kibana must report ready before
+database initialization. Kafka and its Debezium connectors are intentionally
+deployed afterward because they consume the newly-created product databases.
+Keycloak, pgAdmin, and Kafka must then become ready before shared application
+configuration and workloads are enabled.
+
+Do not use `kubectl apply -f bootstrap/root.yaml` for a new deployment. That legacy manifest starts all roots concurrently and bypasses readiness gates.
+
+If the legacy roots are already installed, migrate them in the same command:
+
+```bash
+MIGRATE_LEGACY_ROOTS=true ./scripts/bootstrap.sh
+```
+
+This deletes the old Argo CD parent and child `Application` objects with orphan propagation, preserving their Kubernetes workloads. The phased roots then adopt the desired state in order. Without this flag, bootstrap refuses to continue while a legacy root exists.
 
 Sau bootstrap, kiểm tra:
 
 ```bash
 kubectl get applications -n argocd
 kubectl get ns
-kubectl get pods -n yas-dev
-kubectl get pods -n yas-staging
+kubectl get pods -n dev
+kubectl get pods -n staging
 ```
 
 ## Multi-source và image tag
@@ -265,8 +274,8 @@ apiRedirectUrls:
 
 Istio được quản lý qua GitOps:
 
-- `istio/dev`: policy cho namespace `yas-dev`.
-- `istio/staging`: policy cho namespace `yas-staging`.
+- `istio/dev`: policy cho namespace `dev`.
+- `istio/staging`: policy cho namespace `staging`.
 
 Bạn có thể dùng chung control plane Istio cho cả hai môi trường. Phần cần tách là namespace, workload selector, AuthorizationPolicy và VirtualService/DestinationRule theo service host nội bộ của từng namespace.
 
@@ -287,8 +296,8 @@ kubectl get destinationrule -A
 4. Cập nhật hosts file theo block ở trên.
 5. Cài Argo CD vào k3s.
 6. Add repo credentials cho `yas-gitops` và `yas-helm` trong Argo CD nếu repo private.
-7. Chạy `kubectl apply -f bootstrap/root.yaml` trong repo `yas-gitops`.
-8. Chờ infra ready trước, đặc biệt PostgreSQL, Keycloak, Kafka, Elasticsearch.
+7. Chạy `./scripts/bootstrap.sh` trong repo `yas-gitops`.
+8. Để script kiểm tra từng readiness gate; sửa phase bị lỗi rồi chạy lại cùng command.
 9. Push một thay đổi nhỏ vào service trên `yas/main` để kiểm tra dev auto deploy.
 10. Tạo GitHub Release trên repo `yas` để kiểm tra staging promotion.
 
@@ -297,8 +306,8 @@ kubectl get destinationrule -A
 ```bash
 kubectl get pods -n postgres
 kubectl get pods -n keycloak
-kubectl get pods -n yas-dev
-kubectl get pods -n yas-staging
+kubectl get pods -n dev
+kubectl get pods -n staging
 kubectl get ingress -A
 ```
 
@@ -311,7 +320,6 @@ Kiểm tra URL:
 - `http://staging-backoffice.yas.local.com`
 - `http://staging-api.yas.local.com/swagger-ui`
 - `http://identity.yas.local.com`
-- `http://grafana.yas.local.com`
 - `http://kibana.yas.local.com`
 
 ## Ghi chú còn cần xác minh trên cluster

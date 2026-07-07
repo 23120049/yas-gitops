@@ -1,19 +1,18 @@
-# YAS Microservices Configuration - Hosts File
-# Point to the k3s cluster Tailscale IP: 100.108.98.79
+# Address advertised by:
+# kubectl get service istio-ingressgateway -n istio-system \
+#   -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
 
-# --- Dev Environment ---
-100.108.98.79   dev-api.yas.local.com
-100.108.98.79   dev-backoffice.yas.local.com
-100.108.98.79   dev-storefront.yas.local.com
+# Dev
+100.124.113.25 dev-api.yas.local.com
+100.124.113.25 dev-backoffice.yas.local.com
+100.124.113.25 dev-storefront.yas.local.com
 
-# --- Staging Environment ---
-100.108.98.79   staging-api.yas.local.com
-100.108.98.79   staging-backoffice.yas.local.com
-100.108.98.79   staging-storefront.yas.local.com
+# Staging
+100.124.113.25 staging-api.yas.local.com
+100.124.113.25 staging-backoffice.yas.local.com
+100.124.113.25 staging-storefront.yas.local.com
 
-# --- Shared Infrastructure ---
-100.108.98.79   identity.yas.local.com
-100.108.98.79   pgadmin.yas.local.com
-100.108.98.79   grafana.yas.local.com
-100.108.98.79   kibana.yas.local.com
-100.108.98.79   akhq.yas.local.com
+# Shared infrastructure
+100.124.113.25 identity.yas.local.com
+100.124.113.25 pgadmin.yas.local.com
+100.124.113.25 kibana.yas.local.com

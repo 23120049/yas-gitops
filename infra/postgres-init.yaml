@@ -68,7 +68,7 @@ spec:
     spec:
       containers:
         - name: init-db
-          image: postgres:15-alpine
+          image: postgres:15
           command: ["/bin/bash", "/scripts/init-databases.sh"]
           env:
             - name: POSTGRES_HOST

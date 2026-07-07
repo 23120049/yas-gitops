@@ -7,9 +7,7 @@ maxConnections: "500"
 resources:
   requests:
     cpu: 100m
-    memory: 100Mi
+    memory: 512Mi
   limits:
-    cpu: 500m
-    memory: 500Mi
-nodeSelector:
-  kubernetes.io/hostname: "laptop-hh13kan9"
+    cpu: "1"
+    memory: 2Gi

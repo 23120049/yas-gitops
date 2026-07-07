@@ -10,12 +10,12 @@ spec:
   sources:
     - repoURL: https://grafana.github.io/helm-charts
       chart: promtail
-      targetRevision: HEAD
+      targetRevision: 6.16.6
       helm:
         valueFiles:
           - $values/values/infra/promtail.yaml
     - repoURL: https://github.com/23120049/yas-gitops.git
-      targetRevision: HEAD
+      targetRevision: vibebranch
       ref: values
   destination:
     server: https://kubernetes.default.svc
