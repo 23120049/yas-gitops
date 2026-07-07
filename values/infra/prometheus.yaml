@@ -20,9 +20,15 @@ grafana:
     database:
       type: sqlite3
       path: grafana.db
+
+    server:
+      domain: grafana.yas.local.com
+      root_url: http://grafana.yas.local.com
       
   ingress:
-    ingressClassName: nginx
+    ingressClassName: 
     enabled: true
     hosts:
       - *hostname
+    path: /
+    pathType: Prefix
