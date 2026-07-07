@@ -11,6 +11,8 @@ loki:
   useTestSchema: true
 test:
   enabled: false
+lokiCanary:
+  enabled: false
 storage:
   type: 'filesystem'
 minio:
