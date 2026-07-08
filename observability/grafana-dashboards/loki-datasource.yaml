@@ -13,7 +13,7 @@ data:
     - name: Loki
       type: loki
       uid: loki
-      url: http://loki-gateway.observability.svc.cluster.local:3100
+      url: http://loki-gateway.observability.svc.cluster.local
       access: proxy
       isDefault: false
       jsonData:
