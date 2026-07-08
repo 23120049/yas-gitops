@@ -1,0 +1,169 @@
+YAS traffic placement snapshot
+Generated (UTC): 2026-07-08T00:21:03Z
+Target node: yas-k3s
+This script is read-only; it does not apply labels or modify resources.
+
+===== Cluster identity =====
+
+$ kubectl config current-context
+default
+
+$ kubectl version
+Client Version: v1.35.5+k3s1
+Kustomize Version: v5.7.1
+Server Version: v1.35.5+k3s1
+
+$ kubectl cluster-info
+Kubernetes control plane is running at https://100.75.184.95:6443
+CoreDNS is running at https://100.75.184.95:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+Metrics-server is running at https://100.75.184.95:6443/api/v1/namespaces/kube-system/services/https:metrics-server:https/proxy
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+
+===== API readiness =====
+Kubernetes API is ready (attempt 1/24).
+
+===== Nodes and ServiceLB labels =====
+
+$ kubectl get nodes -o custom-columns=NAME:.metadata.name\,READY:.status.conditions\[\?\(@.type==\"Ready\"\)\].status\,INTERNAL-IP:.status.addresses\[\?\(@.type==\"InternalIP\"\)\].address\,EXTERNAL-IP:.status.addresses\[\?\(@.type==\"ExternalIP\"\)\].address\,ENABLE-LB:.metadata.labels.svccontroller\\.k3s\\.cattle\\.io/enablelb\,LB-POOL:.metadata.labels.svccontroller\\.k3s\\.cattle\\.io/lbpool\,UNSCHEDULABLE:.spec.unschedulable
+NAME              READY     INTERNAL-IP      EXTERNAL-IP      ENABLE-LB   LB-POOL   UNSCHEDULABLE
+desktop-a3m6ffm   True      100.97.132.98    <none>           true        traefik   <none>
+hg                True      100.75.184.95    <none>           true        traefik   true
+itaco             True      100.111.221.78   100.111.221.78   true        traefik   <none>
+laptop-hh13kan9   Unknown   100.124.113.25   100.124.113.25   true        istio     <none>
+yas-k3s           True      100.68.97.62     100.68.97.62     true        traefik   <none>
+
+$ kubectl describe node yas-k3s
+Name:               yas-k3s
+Roles:              <none>
+Labels:             beta.kubernetes.io/arch=amd64
+                    beta.kubernetes.io/instance-type=k3s
+                    beta.kubernetes.io/os=linux
+                    kubernetes.io/arch=amd64
+                    kubernetes.io/hostname=yas-k3s
+                    kubernetes.io/os=linux
+                    node.kubernetes.io/instance-type=k3s
+                    svccontroller.k3s.cattle.io/enablelb=true
+                    svccontroller.k3s.cattle.io/lbpool=traefik
+Annotations:        alpha.kubernetes.io/provided-node-ip: 100.68.97.62
+                    flannel.alpha.coreos.com/backend-data: {"VNI":1,"VtepMAC":"f2:50:5c:20:79:fe"}
+                    flannel.alpha.coreos.com/backend-type: vxlan
+                    flannel.alpha.coreos.com/kube-subnet-manager: true
+                    flannel.alpha.coreos.com/public-ip: 100.68.97.62
+                    k3s.io/external-ip: 100.68.97.62
+                    k3s.io/hostname: yas-k3s
+                    k3s.io/internal-ip: 100.68.97.62
+                    k3s.io/node-args: ["agent","--node-ip","100.68.97.62","--node-external-ip","100.68.97.62","--flannel-iface","tailscale0"]
+                    k3s.io/node-config-hash: ETBWHBIFN4LUZJYN32NTE2V7562I4BQJMRKLDRR3QTCWLOWXGUAA====
+                    k3s.io/node-env: {"K3S_TOKEN":"********","K3S_URL":"https://100.75.184.95:6443"}
+                    node.alpha.kubernetes.io/ttl: 0
+                    volumes.kubernetes.io/controller-managed-attach-detach: true
+CreationTimestamp:  Mon, 06 Jul 2026 05:38:15 +0000
+Taints:             <none>
+Unschedulable:      false
+Lease:              Failed to get lease: Get "https://100.75.184.95:6443/apis/coordination.k8s.io/v1/namespaces/kube-node-lease/leases/yas-k3s": dial tcp 100.75.184.95:6443: i/o timeout
+Conditions:
+  Type             Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
+  ----             ------  -----------------                 ------------------                ------                       -------
+  MemoryPressure   False   Wed, 08 Jul 2026 00:19:13 +0000   Mon, 06 Jul 2026 14:10:42 +0000   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  DiskPressure     False   Wed, 08 Jul 2026 00:19:13 +0000   Mon, 06 Jul 2026 14:10:42 +0000   KubeletHasNoDiskPressure     kubelet has no disk pressure
+  PIDPressure      False   Wed, 08 Jul 2026 00:19:13 +0000   Mon, 06 Jul 2026 14:10:42 +0000   KubeletHasSufficientPID      kubelet has sufficient PID available
+  Ready            True    Wed, 08 Jul 2026 00:19:13 +0000   Mon, 06 Jul 2026 14:10:42 +0000   KubeletReady                 kubelet is posting ready status
+Addresses:
+  InternalIP:  100.68.97.62
+  ExternalIP:  100.68.97.62
+  Hostname:    yas-k3s
+Capacity:
+  cpu:                8
+  ephemeral-storage:  202051056Ki
+  hugepages-1Gi:      0
+  hugepages-2Mi:      0
+  memory:             32860388Ki
+  pods:               110
+Allocatable:
+  cpu:                8
+  ephemeral-storage:  196555267123
+  hugepages-1Gi:      0
+  hugepages-2Mi:      0
+  memory:             32860388Ki
+  pods:               110
+System Info:
+  Machine ID:                 0f67cd08cbed42b2bc6df2dd1e7bff8a
+  System UUID:                73408f86-1400-e2bb-74ec-2cb83ccdc1ec
+  Boot ID:                    c92cd3b2-7c55-43bf-82b0-6bb053407950
+  Kernel Version:             6.17.0-1020-gcp
+  OS Image:                   Ubuntu 24.04.4 LTS
+  Operating System:           linux
+  Architecture:               amd64
+  Container Runtime Version:  containerd://2.2.3-k3s1
+  Kubelet Version:            v1.35.5+k3s1
+  Kube-Proxy Version:         
+PodCIDR:                      10.42.4.0/24
+PodCIDRs:                     10.42.4.0/24
+ProviderID:                   k3s://yas-k3s
+Non-terminated Pods:          (37 in total)
+  Namespace                   Name                                         CPU Requests  CPU Limits  Memory Requests  Memory Limits  Age
+  ---------                   ----                                         ------------  ----------  ---------------  -------------  ---
+  cert-manager                cert-manager-665ff864c6-fs26f                0 (0%)        0 (0%)      0 (0%)           0 (0%)         43h
+  cert-manager                cert-manager-cainjector-6777978db6-45txg     0 (0%)        0 (0%)      0 (0%)           0 (0%)         43h
+  cert-manager                cert-manager-webhook-7799dd5bc6-bqwpf        0 (0%)        0 (0%)      0 (0%)           0 (0%)         43h
+  dev                         backoffice-ui-5db48f649b-xc5kt               100m (1%)     2 (25%)     128Mi (0%)       1Gi (3%)       16h
+  dev                         location-5c4ddd4949-27cm6                    100m (1%)     2 (25%)     128Mi (0%)       1Gi (3%)       16h
+  dev                         search-f88f46f9d-pnc8k                       100m (1%)     2 (25%)     128Mi (0%)       1Gi (3%)       17h
+  dev                         swagger-ui-dev-5bf9bc48d4-bfmmb              100m (1%)     2 (25%)     128Mi (0%)       1Gi (3%)       16h
+  dev                         yas-reloader-645c59956d-bsd9g                100m (1%)     2 (25%)     128Mi (0%)       1Gi (3%)       16h
+  infra                       keycloak-operator-7d689b6c94-9nbkn           300m (3%)     700m (8%)   450Mi (1%)       450Mi (1%)     17h
+  infra                       kibana-kb-698579d65d-tlxx2                   100m (1%)     100m (1%)   2Gi (6%)         2Gi (6%)       17h
+  infra                       postgres-operator-7dcb46bc9-qx6f8            100m (1%)     500m (6%)   250Mi (0%)       500Mi (1%)     25h
+  infra                       postgresql-0                                 100m (1%)     1 (12%)     512Mi (1%)       2Gi (6%)       15h
+  infra                       yas-kafka-entity-operator-88f744dd4-df9s6    0 (0%)        0 (0%)      0 (0%)           0 (0%)         22h
+  istio-system                istio-ingressgateway-5c469d987f-l2m2j        100m (1%)     2 (25%)     128Mi (0%)       1Gi (3%)       43h
+  istio-system                istiod-78fddb5dfd-qtbld                      500m (6%)     0 (0%)      2Gi (6%)         0 (0%)         43h
+  istio-system                kiali-68568d476c-7jjg8                       10m (0%)      0 (0%)      64Mi (0%)        1Gi (3%)       43h
+  istio-system                prometheus-65c465688f-ldqhm                  0 (0%)        0 (0%)      0 (0%)           0 (0%)         43h
+  kube-system                 svclb-traefik-fe536e1c-nl66p                 0 (0%)        0 (0%)      0 (0%)           0 (0%)         15h
+  observability               grafana-operator-cdbc9b544-r9vk8             0 (0%)        0 (0%)      0 (0%)           0 (0%)         43h
+  observability               loki-backend-0                               0 (0%)        0 (0%)      0 (0%)           0 (0%)         22h
+  observability               loki-chunks-cache-0                          500m (6%)     0 (0%)      9830Mi (30%)     9830Mi (30%)   22h
+  observability               loki-gateway-5979b9744b-vq424                0 (0%)        0 (0%)      0 (0%)           0 (0%)         22h
+  observability               loki-minio-0                                 100m (1%)     0 (0%)      128Mi (0%)       0 (0%)         22h
+  observability               loki-results-cache-0                         500m (6%)     0 (0%)      1229Mi (3%)      1229Mi (3%)    22h
+  observability               loki-write-0                                 0 (0%)        0 (0%)      0 (0%)           0 (0%)         22h
+  observability               opentelemetry-operator-6c759596bb-4pfs2      0 (0%)        0 (0%)      0 (0%)           0 (0%)         43h
+  observability               prometheus-prometheus-node-exporter-lxrlm    0 (0%)        0 (0%)      0 (0%)           0 (0%)         14h
+  observability               promtail-568ht                               0 (0%)        0 (0%)      0 (0%)           0 (0%)         7h33m
+  observability               tempo-0                                      0 (0%)        0 (0%)      0 (0%)           0 (0%)         31h
+  staging                     product-755bc7dbd6-rv5vz                     100m (1%)     2 (25%)     128Mi (0%)       1Gi (3%)       17h
+  staging                     promotion-6cd4c5674f-v8c9z                   100m (1%)     2 (25%)     128Mi (0%)       1Gi (3%)       16h
+  staging                     rating-7b75497cff-hl67c                      100m (1%)     2 (25%)     128Mi (0%)       1Gi (3%)       17h
+  staging                     search-548cbbdc5b-x7cn4                      100m (1%)     2 (25%)     128Mi (0%)       1Gi (3%)       17h
+  staging                     storefront-ui-68f559d4b4-79828               100m (1%)     2 (25%)     128Mi (0%)       1Gi (3%)       16h
+  staging                     swagger-ui-staging-5998d5bd46-pjzkc          100m (1%)     2 (25%)     128Mi (0%)       1Gi (3%)       16h
+  staging                     webhook-5494dd6d9-wpvgc                      100m (1%)     2 (25%)     128Mi (0%)       1Gi (3%)       17h
+  staging                     yas-reloader-5549f68d9d-4dm72                100m (1%)     2 (25%)     128Mi (0%)       1Gi (3%)       16h
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource           Requests       Limits
+  --------           --------       ------
+  cpu                3610m (45%)    30300m (378%)
+  memory             18351Mi (57%)  31465Mi (98%)
+  ephemeral-storage  0 (0%)         0 (0%)
+  hugepages-1Gi      0 (0%)         0 (0%)
+  hugepages-2Mi      0 (0%)         0 (0%)
+Events:
+  Type    Reason          Age    From             Message
+  ----    ------          ----   ----             -------
+  Normal  RegisteredNode  15m    node-controller  Node yas-k3s event: Registered Node yas-k3s in Controller
+  Normal  RegisteredNode  4m51s  node-controller  Node yas-k3s event: Registered Node yas-k3s in Controller
+
+===== Ingress services =====
+ERROR: Could not inspect Service istio-system/istio-ingressgateway: Unable to connect to the server: dial tcp 100.75.184.95:6443: i/o timeout
+ERROR: Could not inspect Service kube-system/traefik: Unable to connect to the server: dial tcp 100.75.184.95:6443: i/o timeout
+
+===== ServiceLB DaemonSets and pods =====
+
+$ kubectl get daemonsets -n kube-system -l svccontroller.k3s.cattle.io/svcname -o wide --show-labels
+Unable to connect to the server: dial tcp 100.75.184.95:6443: i/o timeout
+[command failed: exit 1]
+
+$ kubectl get pods -n kube-system -l svccontroller.k3s.cattle.io/svcname -o wide --show-labels

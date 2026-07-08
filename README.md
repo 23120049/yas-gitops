@@ -149,6 +149,33 @@ prerequisites and Argo CD
 
 The timeout for each gate defaults to 15 minutes. Override it with `BOOTSTRAP_TIMEOUT=30m`. When prerequisites are already installed, use `SKIP_PREREQUISITES=true ./scripts/bootstrap.sh`.
 
+For a demo or partial recovery, workload failures can be made non-blocking:
+
+```bash
+BOOTSTRAP_MODE=best-effort BOOTSTRAP_TIMEOUT=5m ./scripts/bootstrap.sh
+```
+
+In `best-effort` mode, phase 5 waits for workload applications concurrently,
+reports every application that is not `Synced` and `Healthy`, and still applies
+phase 6 routing. Healthy services remain available while Argo CD continues to
+reconcile failed services. Phases 1-4 remain fail-fast because they provide the
+shared database, messaging, identity, and configuration dependencies. The
+default mode is `strict` and preserves the normal production bootstrap gate.
+
+Every run now leaves a local and in-cluster status report. To list unhealthy
+Applications, inspect a single microservice, or recover it after committing a
+fix:
+
+```bash
+bash ./scripts/bootstrap-status.sh
+bash ./scripts/bootstrap-status.sh product-dev
+bash ./scripts/recover-application.sh product-dev
+```
+
+See [Bootstrap operation, degraded deployment, and recovery](BOOTSTRAP_OPERATIONS.md)
+for the complete phase policy, report format, failure interpretation, and
+repair workflow.
+
 If GHCR packages are private, provide credentials to the same command; the
 script creates pull secrets after namespaces exist and before workloads start:
 
