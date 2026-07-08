@@ -1,4 +1,4 @@
-backend:
-  image:
-    repository: ghcr.io/23120049/yas-cart
-    tag: latest
+backend:
+  image:
+    repository: ghcr.io/23120049/yas-cart
+    tag: 5e61ecab0ec3cb80b12ca91f60fe44c7b7a49478

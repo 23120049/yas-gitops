@@ -1,4 +1,4 @@
 backend:
   image:
     repository: ghcr.io/23120049/yas-cart
-    tag: cb89e3fa1efde8223bc1ed5dbd03067f215fe333
+    tag: 5e61ecab0ec3cb80b12ca91f60fe44c7b7a49478
