@@ -10,4 +10,4 @@ spec:
       - port:
           number: 8090
         tls:
-          mode: PERMISSIVE
+          mode: DISABLE
