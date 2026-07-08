@@ -1,0 +1,93 @@
+YAS bootstrap deployment report
+run_id=20260708T072816Z
+started_at=2026-07-08T07:28:16Z
+mode=best-effort
+timeout=10m
+
+TIMESTAMP	PHASE	COMPONENT	RESULT	DETAIL
+2026-07-08T07:28:20Z	startup	prerequisites	SKIPPED	SKIP_PREREQUISITES=true
+2026-07-08T07:28:27Z	01-operators	yas-bootstrap-operators	READY	Synced and Healthy
+2026-07-08T07:28:30Z	01-operators	postgres-operator	READY	Synced and Healthy
+2026-07-08T07:28:32Z	01-operators	strimzi-operator	READY	Synced and Healthy
+2026-07-08T07:28:35Z	01-operators	eck-operator	READY	Synced and Healthy
+2026-07-08T07:39:07Z	01-operators	keycloak-operator	FAILED	Unknown/Healthy: Failed to load target state: failed to generate manifest for source 1 of 1: rpc error: code = Unknown desc = Manifest generation error (cached): `kustomize build <path to cached source>/operators/keycloak` failed exit status 1: Error: accumulating resources: accumulation err='accumulating resources from 'https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/26.0.2/kubernetes/keycloaks.k8s.keycloak.org-v1.yml': URL is a git repository': failed to run '/usr/bin/git fetch --depth=1 https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources HEAD': remote: 404: Not Found fatal: repository 'https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/' not found : exit status 128
+2026-07-08T07:39:07Z	01-operators	bootstrap	FAILED	Stopped in 01-operators; exit code 1
+
+outcome=FAILED
+finished_at=2026-07-08T07:39:07Z
+last_phase=01-operators
+
+ARGO CD APPLICATION SNAPSHOT
+NAME                     SYNC      HEALTH     REVISION                                                                  MESSAGE
+backoffice-bff-dev       Synced    Degraded   <none>                                                                    <none>
+backoffice-bff-staging   Synced    Degraded   <none>                                                                    <none>
+backoffice-ui-dev        Synced    Degraded   <none>                                                                    <none>
+backoffice-ui-staging    Synced    Healthy    <none>                                                                    <none>
+cart-dev                 Synced    Healthy    <none>                                                                    <none>
+cart-staging             Synced    Healthy    <none>                                                                    <none>
+cert-manager             Synced    Healthy    v1.12.0                                                                   <none>
+customer-dev             Synced    Healthy    <none>                                                                    <none>
+customer-staging         Synced    Healthy    <none>                                                                    <none>
+eck-operator             Synced    Healthy    3.4.1                                                                     <none>
+elasticsearch            Synced    Healthy    <none>                                                                    <none>
+grafana-operator         Synced    Healthy    sha256:2544a2de962bbe263cdabb389a3e802211fedcad6b784d74150d33f5e40a9fd9   <none>
+inventory-dev            Synced    Healthy    <none>                                                                    <none>
+inventory-staging        Synced    Healthy    <none>                                                                    <none>
+kafka                    Synced    Degraded   <none>                                                                    <none>
+keycloak                 Synced    Healthy    <none>                                                                    <none>
+keycloak-operator        Unknown   Healthy    main                                                                      Failed to load target state: failed to generate manifest for source 1 of 1: rpc error: code = Unknown desc = Manifest generation error (cached): `kustomize build <path to cached source>/operators/keycloak` failed exit status 1: Error: accumulating resources: accumulation err='accumulating resources from 'https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/26.0.2/kubernetes/keycloaks.k8s.keycloak.org-v1.yml': URL is a git repository': failed to run '/usr/bin/git fetch --depth=1 https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources HEAD': remote: 404: Not Found
+fatal: repository 'https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/' not found
+: exit status 128
+location-dev                        Synced      Degraded      <none>                                                                    <none>
+location-staging                    Synced      Healthy       <none>                                                                    <none>
+loki                                Synced      Healthy       <none>                                                                    <none>
+media-dev                           Synced      Healthy       <none>                                                                    <none>
+media-staging                       Synced      Healthy       <none>                                                                    <none>
+opentelemetry-operator              Synced      Healthy       0.118.0                                                                   <none>
+order-dev                           Synced      Healthy       <none>                                                                    <none>
+order-staging                       Synced      Healthy       <none>                                                                    <none>
+payment-dev                         Synced      Healthy       <none>                                                                    <none>
+payment-paypal-dev                  Synced      Degraded      <none>                                                                    <none>
+payment-paypal-staging              Synced      Degraded      <none>                                                                    <none>
+payment-staging                     Synced      Healthy       <none>                                                                    <none>
+pgadmin                             Synced      Healthy       <none>                                                                    <none>
+postgres-operator                   Synced      Healthy       1.15.1                                                                    <none>
+postgresql                          Synced      Healthy       <none>                                                                    <none>
+product-dev                         Synced      Healthy       <none>                                                                    <none>
+product-staging                     Synced      Healthy       <none>                                                                    <none>
+prometheus                          Synced      Progressing   <none>                                                                    <none>
+promotion-dev                       Synced      Healthy       <none>                                                                    <none>
+promotion-staging                   Synced      Healthy       <none>                                                                    <none>
+promtail                            Synced      Healthy       <none>                                                                    <none>
+rating-dev                          Synced      Healthy       <none>                                                                    <none>
+rating-staging                      Synced      Healthy       <none>                                                                    <none>
+recommendation-dev                  Synced      Healthy       <none>                                                                    <none>
+recommendation-staging              Synced      Healthy       <none>                                                                    <none>
+redis                               Synced      Healthy       <none>                                                                    <none>
+sampledata-dev                      Synced      Healthy       <none>                                                                    <none>
+sampledata-staging                  Synced      Healthy       <none>                                                                    <none>
+search-dev                          Synced      Progressing   <none>                                                                    <none>
+search-staging                      Synced      Degraded      <none>                                                                    <none>
+storefront-bff-dev                  Synced      Degraded      <none>                                                                    <none>
+storefront-bff-staging              Synced      Degraded      <none>                                                                    <none>
+storefront-ui-dev                   Synced      Degraded      <none>                                                                    <none>
+storefront-ui-staging               Synced      Healthy       <none>                                                                    <none>
+strimzi-operator                    Synced      Healthy       1.1.0                                                                     <none>
+swagger-ui-dev                      Synced      Healthy       29d797be1d3acd6fa072622a739470820b341750                                  <none>
+swagger-ui-staging                  Synced      Healthy       29d797be1d3acd6fa072622a739470820b341750                                  <none>
+tax-dev                             Synced      Healthy       <none>                                                                    <none>
+tax-staging                         Synced      Healthy       <none>                                                                    <none>
+tempo                               Synced      Healthy       <none>                                                                    <none>
+webhook-dev                         Synced      Healthy       <none>                                                                    <none>
+webhook-staging                     Synced      Healthy       <none>                                                                    <none>
+yas-bootstrap-configuration         Synced      Healthy       2c4136c95f3e4db8731068916f2cfa4f1d67807c                                  <none>
+yas-bootstrap-connectors            OutOfSync   Degraded      2c4136c95f3e4db8731068916f2cfa4f1d67807c                                  KafkaConnector/debezium-connector-postgresql-product-db-staging is part of applications argocd/yas-bootstrap-connectors and kafka
+yas-bootstrap-core-infrastructure   Synced      Healthy       2c4136c95f3e4db8731068916f2cfa4f1d67807c                                  <none>
+yas-bootstrap-initialization        Synced      Healthy       2c4136c95f3e4db8731068916f2cfa4f1d67807c                                  <none>
+yas-bootstrap-operators             Synced      Healthy       2c4136c95f3e4db8731068916f2cfa4f1d67807c                                  <none>
+yas-bootstrap-platform              Synced      Healthy       2c4136c95f3e4db8731068916f2cfa4f1d67807c                                  <none>
+yas-bootstrap-workloads             Synced      Healthy       2c4136c95f3e4db8731068916f2cfa4f1d67807c                                  <none>
+yas-configuration-dev               Synced      Healthy       29d797be1d3acd6fa072622a739470820b341750                                  <none>
+yas-configuration-staging           Synced      Healthy       29d797be1d3acd6fa072622a739470820b341750                                  <none>
+yas-root                            Synced      Healthy       9038e4236070aa67d1867e58bbb6bae3f2e9cb0e                                  <none>
+zookeeper                           Synced      Healthy       <none>                                                                    <none>

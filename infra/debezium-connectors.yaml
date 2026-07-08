@@ -14,6 +14,8 @@ spec:
     database.password: ${secrets:postgresql.credentials:password}
     topic.prefix: dbproductdev
     database.dbname: product_dev
+    slot.name: debezium_product_dev
+    publication.name: dbz_publication_product_dev
     table.include.list: public.product
     schema.include.list: public
     key.converter.schemas.enable: false
@@ -37,6 +39,8 @@ spec:
     database.password: ${secrets:postgresql.credentials:password}
     topic.prefix: dbproductstaging
     database.dbname: product_staging
+    slot.name: debezium_product_staging
+    publication.name: dbz_publication_product_staging
     table.include.list: public.product
     schema.include.list: public
     key.converter.schemas.enable: false
