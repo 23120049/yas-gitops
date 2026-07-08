@@ -1,7 +1,7 @@
-  backend:
-    image:
-      repository: ghcr.io/23120049/yas-cart
-      tag: 943a6f8cd62782303e5c7a646c2c2ba613ddc422
+backend:
+  image:
+    repository: ghcr.io/23120049/yas-cart
+    tag: 943a6f8cd62782303e5c7a646c2c2ba613ddc422
   serviceMonitor:
     enabled: true
   livenessProbe:
@@ -12,3 +12,33 @@
     httpGet:
       path: /actuator/health/readiness
       port: metric
+
+cartApplicationConfig:
+  management:
+    otlp:
+      tracing:
+        endpoint: http://opentelemetry-collector-collector.observability:4318/v1/traces
+      metrics:
+        url: http://opentelemetry-collector-collector.observability:4318/v1/metrics
+    server:
+      port: 8090
+    health:
+      readinessstate:
+        enabled: true
+      livenessstate:
+        enabled: true
+    tracing:
+      sampling:
+        probability: 1.0
+    metrics:
+      tags:
+        application: ${spring.application.name}
+    endpoints:
+      web:
+        exposure:
+          include: prometheus, health
+    endpoint:
+      health:
+        probes:
+          enabled: true
+        show-details: always
