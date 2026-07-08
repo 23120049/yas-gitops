@@ -14,3 +14,11 @@ spec:
             principals:
               - "cluster.local/ns/staging/sa/storefront-bff"
               - "cluster.local/ns/staging/sa/order"
+    - to:
+        - operation:
+            paths:
+              - /cart/actuator
+              - /cart/actuator/*
+              - /actuator
+              - /actuator/*
+              - /cart/prometheus
