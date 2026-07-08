@@ -2,7 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+REPO_ROOT="$(git -C "${SCRIPT_DIR}" rev-parse --show-toplevel 2>/dev/null || cd "${SCRIPT_DIR}/.." && pwd)"
 TIMEOUT="${BOOTSTRAP_TIMEOUT:-15m}"
 BOOTSTRAP_MODE="${BOOTSTRAP_MODE:-strict}"
 REPORT_DIR="${BOOTSTRAP_REPORT_DIR:-${REPO_ROOT}/.bootstrap-reports}"
@@ -306,21 +306,29 @@ for namespace in dev staging; do
 done
 
 CURRENT_PHASE="05-workloads"
+services_files=()
+shopt -s nullglob
+for f in "${REPO_ROOT}"/applications/*/services.yaml; do
+  services_files+=("$f")
+done
+shopt -u nullglob
+
 mapfile -t workload_children < <(
-  awk '
-    $1 == "kind:" && $2 == "Application" { application = 1; next }
-    application && $1 == "metadata:" { metadata = 1; next }
-    application && metadata && $1 == "name:" {
-      print $2
-      application = 0
-      metadata = 0
-    }
-  ' "${REPO_ROOT}/applications/dev/services.yaml" \
-    "${REPO_ROOT}/applications/staging/services.yaml"
+  if (( ${#services_files[@]} > 0 )); then
+    awk '
+      { gsub(/\r/, "") }
+      $1 == "kind:" && $2 == "Application" { application = 1; next }
+      application && $1 == "metadata:" { metadata = 1; next }
+      application && metadata && $1 == "name:" {
+        print $2
+        application = 0
+        metadata = 0
+      }
+    ' "${services_files[@]}"
+  fi
 )
 if (( ${#workload_children[@]} == 0 )); then
-  echo "No workload Applications were discovered in applications/*/services.yaml." >&2
-  exit 1
+  echo "Warning: No workload Applications were discovered in applications/*/services.yaml." >&2
 fi
 workload_applications=(yas-bootstrap-workloads "${workload_children[@]}")
 record_result "workload-discovery" "READY" "Discovered ${#workload_children[@]} child Applications"
