@@ -82,4 +82,4 @@ ui:
   backoffice:
     image:
       repository: ghcr.io/23120049/yas-backoffice
-      tag: latest
+      tag: 12ad2a50be80eff0cc71860eb27ba4a76313a991
