@@ -15,7 +15,7 @@ spec:
               - "cluster.local/ns/dev/sa/storefront-bff"
               - "cluster.local/ns/dev/sa/order"
               - "cluster.local/ns/observability/sa/prometheus-kube-prometheus-prometheus"
-    - to:
+      to:
         - operation:
             paths:
               - /cart/actuator
@@ -24,3 +24,14 @@ spec:
               - /actuator/*
               - /cart/prometheus
               - /prometheus
+    - from:
+        - source:
+            namespaces:
+              - "observability"
+      to:
+        - operation:
+            paths:
+              - /cart/actuator
+              - /cart/actuator/*
+              - /actuator
+              - /actuator/*
