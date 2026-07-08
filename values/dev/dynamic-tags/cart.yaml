@@ -17,9 +17,9 @@ cartApplicationConfig:
   management:
     otlp:
       tracing:
-        endpoint: http://opentelemetry-collector-collector.observability:4318/v1/traces
+        endpoint: http://opentelemetry-collector-collector.observability.svc.cluster.local:4318/v1/traces
       metrics:
-        url: http://opentelemetry-collector-collector.observability:4318/v1/metrics
+        url: http://opentelemetry-collector-collector.observability.svc.cluster.local:4318/v1/metrics
     server:
       port: 8090
     health:
