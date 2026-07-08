@@ -2,7 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(git -C "${SCRIPT_DIR}" rev-parse --show-toplevel 2>/dev/null || cd "${SCRIPT_DIR}/.." && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 TIMEOUT="${BOOTSTRAP_TIMEOUT:-15m}"
 BOOTSTRAP_MODE="${BOOTSTRAP_MODE:-strict}"
 REPORT_DIR="${BOOTSTRAP_REPORT_DIR:-${REPO_ROOT}/.bootstrap-reports}"
