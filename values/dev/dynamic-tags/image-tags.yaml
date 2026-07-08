@@ -65,7 +65,7 @@ backend:
   backoffice-bff:
     image:
       repository: ghcr.io/23120049/yas-backoffice-bff
-      tag: 12ad2a50be80eff0cc71860eb27ba4a76313a991
+      tag: 8765949c68e047673068feb68ef979154fff388e
   tax:
     image:
       repository: ghcr.io/23120049/yas-tax
