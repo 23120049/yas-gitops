@@ -4,9 +4,9 @@ backend:
     tag: 742d4af533ac9da2cd02358fd6a1b1026af74deb
   livenessProbe:
     httpGet:
-      path: /cart/actuator/health/liveness
-      port: http
+      path: /actuator/health/liveness
+      port: metric
   readinessProbe:
     httpGet:
-      path: /cart/actuator/health/readiness
-      port: http
+      path: /actuator/health/readiness
+      port: metric
