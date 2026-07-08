@@ -1,4 +1,4 @@
 ui:
   image:
     repository: ghcr.io/23120049/yas-storefront
-    tag: 8c70ebb6eef1ac88a50c069b0dadc803bb846ddf
+    tag: 12ad2a50be80eff0cc71860eb27ba4a76313a991
