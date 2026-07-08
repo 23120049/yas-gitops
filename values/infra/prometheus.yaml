@@ -24,7 +24,7 @@ grafana:
     server:
       domain: grafana.yas.local.com
       root_url: http://grafana.yas.local.com
-      
+
   ingress:
     ingressClassName: traefik
     enabled: true
@@ -32,3 +32,23 @@ grafana:
       - *hostname
     path: /
     pathType: Prefix
+
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+      searchNamespace: ALL
+    datasources:
+      enabled: true
+      label: grafana_datasource
+      searchNamespace: ALL
+
+# Additional datasources via ConfigMap ( Tempo + Loki )
+grafana dashboards:
+  default:
+    loki-datasource:
+      gnetId: null
+      datasourceUid: loki
+    tempo-datasource:
+      gnetId: null
+      datasourceUid: tempo
