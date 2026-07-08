@@ -78,7 +78,7 @@ ui:
   storefront:
     image:
       repository: ghcr.io/23120049/yas-storefront
-      tag: latest
+      tag: 12ad2a50be80eff0cc71860eb27ba4a76313a991
   backoffice:
     image:
       repository: ghcr.io/23120049/yas-backoffice
