@@ -1,0 +1,23 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: cart-dev
+  namespace: observability
+  labels:
+    app.kubernetes.io/instance: cart-dev
+    app.kubernetes.io/name: cart
+    release: prometheus
+spec:
+  jobLabel: cart-dev
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: cart-dev
+      app.kubernetes.io/name: cart
+  namespaceSelector:
+    matchNames:
+      - dev
+  endpoints:
+    - port: metric
+      path: /actuator/prometheus
+      interval: 30s
+      scheme: http

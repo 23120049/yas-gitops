@@ -1,0 +1,23 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: cart-staging
+  namespace: observability
+  labels:
+    app.kubernetes.io/instance: cart-staging
+    app.kubernetes.io/name: cart
+    release: prometheus
+spec:
+  jobLabel: cart-staging
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: cart-staging
+      app.kubernetes.io/name: cart
+  namespaceSelector:
+    matchNames:
+      - staging
+  endpoints:
+    - port: metric
+      path: /actuator/prometheus
+      interval: 30s
+      scheme: http
