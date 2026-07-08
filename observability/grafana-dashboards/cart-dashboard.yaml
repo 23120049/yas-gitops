@@ -160,6 +160,56 @@ data:
           "targets": [{"datasource": {"type": "prometheus", "uid": "prometheus"}, "editorMode": "code", "expr": "logback_events_total{application=\"cart\"}", "instant": false, "legendFormat": "{{level}}", "range": true, "refId": "A"}],
           "title": "Log Events by Level",
           "type": "timeseries"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "palette-classic"},
+              "custom": {"axisBorderShow": false, "axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "barWidthFactor": 0.6, "drawStyle": "bars", "fillOpacity": 80, "gradientMode": "none", "hideFrom": {"legend": false, "tooltip": false, "viz": false}, "insertNulls": false, "lineInterpolation": "linear", "lineWidth": 1, "pointSize": 5, "scaleDistribution": {"type": "linear"}, "showPoints": "never", "spanNulls": false, "stacking": {"group": "A", "mode": "none"}, "thresholdsStyle": {"mode": "off"}},
+              "mappings": [],
+              "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 20},
+          "id": 8,
+          "options": {"alertThreshold": true, "legend": {"calcs": ["sum", "mean"], "displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"hideZeros": false, "mode": "multi", "sort": "none"}},
+          "targets": [
+            {"datasource": {"type": "prometheus", "uid": "prometheus"}, "editorMode": "code", "expr": "rate(cart_add_count_total[$__rate_interval])", "instant": false, "legendFormat": "Add to Cart", "range": true, "refId": "A"},
+            {"datasource": {"type": "prometheus", "uid": "prometheus"}, "editorMode": "code", "expr": "rate(cart_remove_count_total[$__rate_interval])", "hide": false, "instant": false, "legendFormat": "Remove from Cart", "range": true, "refId": "B"},
+            {"datasource": {"type": "prometheus", "uid": "prometheus"}, "editorMode": "code", "expr": "rate(cart_update_count_total[$__rate_interval])", "hide": false, "instant": false, "legendFormat": "Update Cart Item", "range": true, "refId": "C"},
+            {"datasource": {"type": "prometheus", "uid": "prometheus"}, "editorMode": "code", "expr": "rate(cart_delete_count_total[$__rate_interval])", "hide": false, "instant": false, "legendFormat": "Delete Cart Item", "range": true, "refId": "D"},
+            {"datasource": {"type": "prometheus", "uid": "prometheus"}, "editorMode": "code", "expr": "rate(cart_get_count_total[$__rate_interval])", "hide": false, "instant": false, "legendFormat": "Get Cart", "range": true, "refId": "E"}
+          ],
+          "title": "Cart Operations Rate",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {"type": "prometheus", "uid": "prometheus"},
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "palette-classic"},
+              "custom": {"axisBorderShow": false, "axisCenteredZero": false, "axisColorMode": "text", "axisLabel": "", "axisPlacement": "auto", "barAlignment": 0, "barWidthFactor": 0.6, "drawStyle": "line", "fillOpacity": 10, "gradientMode": "none", "hideFrom": {"legend": false, "tooltip": false, "viz": false}, "insertNulls": false, "lineInterpolation": "linear", "lineWidth": 1, "pointSize": 5, "scaleDistribution": {"type": "linear"}, "showPoints": "never", "spanNulls": false, "stacking": {"group": "A", "mode": "none"}, "thresholdsStyle": {"mode": "off"}},
+              "mappings": [],
+              "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "orange", "value": 500}, {"color": "red", "value": 1000}]},
+              "unit": "ms"
+            },
+            "overrides": []
+          },
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 20},
+          "id": 9,
+          "options": {"alertThreshold": true, "legend": {"calcs": ["mean", "max"], "displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"hideZeros": false, "mode": "multi", "sort": "none"}},
+          "targets": [
+            {"datasource": {"type": "prometheus", "uid": "prometheus"}, "editorMode": "code", "expr": "cart_add_seconds_mean * 1000", "instant": false, "legendFormat": "Add to Cart (mean)", "range": true, "refId": "A"},
+            {"datasource": {"type": "prometheus", "uid": "prometheus"}, "editorMode": "code", "expr": "cart_remove_seconds_mean * 1000", "hide": false, "instant": false, "legendFormat": "Remove (mean)", "range": true, "refId": "B"},
+            {"datasource": {"type": "prometheus", "uid": "prometheus"}, "editorMode": "code", "expr": "cart_update_seconds_mean * 1000", "hide": false, "instant": false, "legendFormat": "Update (mean)", "range": true, "refId": "C"},
+            {"datasource": {"type": "prometheus", "uid": "prometheus"}, "editorMode": "code", "expr": "cart_get_seconds_mean * 1000", "hide": false, "instant": false, "legendFormat": "Get Cart (mean)", "range": true, "refId": "D"},
+            {"datasource": {"type": "prometheus", "uid": "prometheus"}, "editorMode": "code", "expr": "cart_delete_seconds_mean * 1000", "hide": false, "instant": false, "legendFormat": "Delete (mean)", "range": true, "refId": "E"}
+          ],
+          "title": "Cart Business Operation Latency",
+          "type": "timeseries"
         }
       ],
       "refresh": "10s",

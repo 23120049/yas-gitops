@@ -33,14 +33,24 @@ spec:
           http:
             endpoint: 0.0.0.0:4318
 
-    processors:
-      batch: {}
-
     exporters:
       loki:
         endpoint: http://loki-gateway.observability.svc.cluster.local/loki/api/v1/push
       otlphttp/tempo:
         endpoint: http://tempo.observability.svc.cluster.local:4318
+      prometheusremotewrite:
+        endpoint: http://kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090/api/v1/write
+        resource_to_telemetry_conversion:
+          enabled: true
+
+    processors:
+      batch: {}
+      transform:
+        metric_statements:
+          - context: metric
+            statements:
+              - set(description, "") where name == "queueSize"
+              - set(description, "") where name == "rpc.server.duration"
 
     service:
       pipelines:
@@ -52,3 +62,7 @@ spec:
           receivers: [otlp]
           processors: [batch]
           exporters: [otlphttp/tempo]
+        metrics:
+          receivers: [otlp]
+          processors: [transform, batch]
+          exporters: [prometheusremotewrite]
