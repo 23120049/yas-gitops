@@ -1,7 +1,7 @@
 backend:
   image:
     repository: ghcr.io/23120049/yas-cart
-    tag: fafd9bd1c2af253aed898672a13673fb7932c325
+    tag: 742d4af533ac9da2cd02358fd6a1b1026af74deb
   livenessProbe:
     httpGet:
       path: /cart/actuator/health/liveness
