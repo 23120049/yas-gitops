@@ -16,11 +16,13 @@ backend:
       port: metric
 cartApplicationConfig:
   management:
-    otlp:
-      tracing:
-        endpoint: http://10.43.1.133:4317
-      metrics:
-        url: http://10.43.1.133:4317
+    tracing:
+      sampling:
+        probability: 1.0
+    metrics:
+      export:
+        otlp:
+          enabled: false
     server:
       port: 8090
     health:
@@ -28,9 +30,6 @@ cartApplicationConfig:
         enabled: true
       livenessstate:
         enabled: true
-    tracing:
-      sampling:
-        probability: 1.0
     metrics:
       tags:
         application: ${spring.application.name}
@@ -44,15 +43,16 @@ cartApplicationConfig:
           enabled: true
         show-details: always
   otel:
+    service:
+      name: cart
     sdk:
       autoconfigure:
         enabled: true
     exporter:
       otlp:
-        endpoint: http://10.43.1.133:4317
+        endpoint: http://opentelemetry-collector-collector.observability.svc.cluster.local:4317
+        protocol: grpc
     traces:
       exporter: otlp
     metrics:
       exporter: none
-    service:
-      name: cart
