@@ -14,8 +14,11 @@ spec:
             principals:
               - "cluster.local/ns/dev/sa/storefront-bff"
               - "cluster.local/ns/dev/sa/order"
+    - from:
+        - source:
+            principals:
               - "cluster.local/ns/observability/sa/prometheus-kube-prometheus-prometheus"
-    - to:
+      to:
         - operation:
             paths:
               - /cart/actuator
