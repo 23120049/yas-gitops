@@ -4,6 +4,8 @@ backend:
     tag: 7520242be8816bda947c0fc64ebfec693ab70668
   serviceMonitor:
     enabled: true
+  podAnnotations:
+    sidecar.istio.io/inject: "true"
   livenessProbe:
     httpGet:
       path: /actuator/health/liveness
