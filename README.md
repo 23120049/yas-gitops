@@ -1,361 +1,369 @@
-# YAS GitOps Runbook
+# YAS GitOps
 
-Repo này là desired state cho hệ thống YAS trên cụm k3s. Ba repo được dùng trong flow là:
+`yas-gitops` là repository khai báo desired state cho hệ thống YAS trên Kubernetes. Repo này chứa Argo CD `Application`, values theo môi trường, bootstrap manifests, Istio routing và các script vận hành.
 
-- `yas`: source code, GitHub Actions CI, build Docker image và push lên GHCR.
-- `yas-helm`: Helm chart cho service, frontend, infrastructure và Keycloak.
-- `yas-gitops`: Argo CD `Application`, value override theo môi trường, Istio policy.
+Hệ thống được chia thành 3 repository:
 
-Mục tiêu hiện tại: deploy 2 môi trường `dev` và `staging`, dùng chung infrastructure, chạy trên k3s qua Tailscale, image nằm ở GHCR account `23120049`.
+- `23120049/yas`: source code microservices, GitHub Actions CI/CD, build image và push lên GHCR.
+- `23120049/yas-helm`: Helm charts cho application, UI và infrastructure.
+- `23120049/yas-gitops`: GitOps state để Argo CD sync vào cluster.
 
-## Trạng thái đã làm được
+Argo CD không lấy image từ Docker Hub. Các workload dùng image từ GHCR theo format:
 
-Phần đã có từ setup của bạn:
+```text
+ghcr.io/23120049/yas-<service>:<tag>
+```
 
-- Repo `yas` đã có workflow CI cho từng service, build image và push lên GHCR.
-- Repo `yas-helm` đã có Helm chart cho service, UI, Swagger UI và infrastructure.
-- Repo `yas-gitops` đã có cấu trúc GitOps cho Argo CD.
-- Cụm target là k3s, truy cập qua IP Tailscale của node.
+Tài liệu liên quan:
 
-Phần đã được chỉnh thêm để flow chạy đúng dev/staging:
-
-- Tách Argo CD application theo môi trường tại `applications/dev/services.yaml` và `applications/staging/services.yaml`.
-- Dùng Argo CD multi-source để service chart lấy Helm chart từ `yas-helm` và value tag từ `yas-gitops`.
-- Tạo per-service dynamic tag file trong `values/dev/dynamic-tags/` và `values/staging/dynamic-tags/`.
-- Sửa workflow deploy trong `yas` để:
-  - Push vào `main` cập nhật tag dev bằng `${{ github.sha }}` cho những service thay đổi.
-  - Publish GitHub Release cập nhật toàn bộ tag staging thành `latest`.
-- Sửa rollback/developer-test workflow để gọi script qua `bash`, tránh lỗi executable bit trên Windows.
-- Sửa Keycloak chart trong `yas-helm` để redirect URI hỗ trợ `dev` và `staging`.
-- Sửa GHCR owner trong Helm/workflow liên quan sang `23120049`.
+- [Three-repository deployment](THREE_REPO_DEPLOYMENT.md): giải thích kiến trúc 3 repo và cách các repo tương tác.
+- [Bootstrap operations](BOOTSTRAP_OPERATIONS.md): giải thích chi tiết phase bootstrap, chế độ `strict`/`best-effort`, report và recovery.
 
 ## Cấu trúc repo
 
 ```text
 yas-gitops/
 ├── applications/
-│   ├── dev/
-│   │   └── services.yaml
-│   └── staging/
-│       └── services.yaml
+│   ├── dev/services.yaml
+│   └── staging/services.yaml
 ├── bootstrap/
-│   └── root.yaml
+│   ├── 01-operators.yaml
+│   ├── 02-infrastructure.yaml
+│   ├── 03-initialization.yaml
+│   ├── 04-platform.yaml
+│   ├── 03-connectors.yaml
+│   ├── 04-configuration.yaml
+│   ├── 05-workloads.yaml
+│   └── 06-routing.yaml
 ├── infra/
-│   ├── elasticsearch.yaml
-│   ├── kafka.yaml
-│   ├── keycloak.yaml
-│   ├── observability.yaml
-│   ├── pgadmin.yaml
-│   ├── postgres-init.yaml
-│   ├── postgresql.yaml
-│   └── zookeeper.yaml
 ├── istio/
 │   ├── dev/
 │   └── staging/
+├── scripts/
 └── values/
-    ├── dev/
-    │   └── dynamic-tags/
-    ├── infra/
-    └── staging/
-        └── dynamic-tags/
+    ├── dev/dynamic-tags/
+    ├── staging/dynamic-tags/
+    └── infra/
 ```
 
-## Cách flow hoạt động
+## Điều kiện trước khi bootstrap
 
-```mermaid
-flowchart LR
-  A["Push code vào yas/main"] --> B["Service CI build image"]
-  B --> C["Push GHCR: latest và commit SHA"]
-  C --> D["DEPLOYMENT.yaml cập nhật values/dev/dynamic-tags/<service>.yaml"]
-  D --> E["Argo CD sync dev"]
+Máy chạy bootstrap cần có:
 
-  R["Publish GitHub Release"] --> S["DEPLOYMENT.yaml cập nhật toàn bộ staging tag = latest"]
-  S --> T["Argo CD sync staging"]
+- k3s cluster đang hoạt động.
+- `kubectl` trỏ đúng vào cluster.
+- `git` có trong `PATH`.
+- Repo local `yas-gitops` đang ở branch `main`.
+- Remote `main` của `yas-gitops` và `yas-helm` đã có các thay đổi cần deploy.
+- Máy có quyền truy cập cluster qua Tailscale nếu cluster chạy trong mạng Tailscale.
 
-  H["yas-helm"] --> E
-  H --> T
-  G["yas-gitops"] --> E
-  G --> T
+Kiểm tra nhanh:
+
+```bash
+git branch --show-current
+kubectl cluster-info
+kubectl get nodes -o wide
 ```
 
-Trích từ file `yas/.github/workflows/DEPLOYMENT.yaml`, dev dùng commit SHA:
+Bootstrap đọc state từ remote `main` thông qua Argo CD. Vì vậy không nên chạy bootstrap khi thay đổi chỉ mới nằm local mà chưa commit/push.
 
-```yaml
-ENVIRONMENT: dev
-IMAGE_TAG: ${{ github.sha }}
+## Cấu hình DNS/hosts
+
+Istio là external ingress duy nhất. Sau khi gateway có IP, các máy cần truy cập UI/API phải map các domain `*.yas.local.com` về IP của `istio-ingressgateway`.
+
+Kiểm tra IP gateway:
+
+```bash
+kubectl get service istio-ingressgateway -n istio-system -o wide
+kubectl get service istio-ingressgateway -n istio-system \
+  -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
 ```
 
-Trích từ file `yas/.github/workflows/DEPLOYMENT.yaml`, staging dùng `latest` khi tạo release:
+Cập nhật file hosts trên máy local theo nội dung trong:
 
-```yaml
-ENVIRONMENT: staging
-IMAGE_TAG: latest
+```text
+hostnames.txt
 ```
 
-## Dev và staging
+Các URL chính:
 
-Hai môi trường dùng chung infrastructure trong namespace `infra`.
+```text
+http://dev-storefront.yas.local.com
+http://dev-backoffice.yas.local.com
+http://dev-api.yas.local.com/swagger-ui
+http://staging-storefront.yas.local.com
+http://staging-backoffice.yas.local.com
+http://staging-api.yas.local.com/swagger-ui
+http://identity.yas.local.com
+http://kibana.yas.local.com
+```
 
-Hai môi trường tách application namespace:
+## Chạy bootstrap lần đầu
 
-- Dev: `dev`
-- Staging: `staging`
-
-Vì chạy song song hai môi trường trên cùng cluster, các public host phải tách nhau. Dev dùng `dev-*`, staging dùng `staging-*`. Infrastructure host như Keycloak, pgAdmin, Kibana, Grafana có thể dùng chung.
-
-## DNS and ingress
-
-Istio is the only external ingress. K3s ServiceLB must advertise
-`istio-ingressgateway` on node D. Each teammate maps the `*.yas.local.com`
-names in `hostnames.txt` to `100.124.113.25`, the IP advertised by the gateway
-Service.
-
-Use the Linux/WSL Tailscale IP when that environment directly runs k3s and
-ServiceLB advertises it. Use the Windows Tailscale IP only when Windows owns
-Tailscale and forwards ports 80/443 into the k3s environment. The authoritative
-value is `.status.loadBalancer.ingress[0].ip` on `istio-ingressgateway`.
-
-## One-command bootstrap
-
-Điều kiện trước khi chạy:
-
-- k3s cluster đã chạy.
-- Máy local truy cập được cluster qua `kubectl`.
-- Argo CD có quyền đọc repo `23120049/yas-gitops` và `23120049/yas-helm`.
-- `istio-ingressgateway` được ServiceLB advertise trên node D.
-
-Commit and push the `yas-gitops` and `yas-helm` state first, then run one command from a Bash shell:
+Từ thư mục repo `yas-gitops`, chạy:
 
 ```bash
 ./scripts/bootstrap.sh
 ```
 
-This is the GitOps equivalent of the old YAS deployment scripts. Run it from
-`main` after the deployment changes have been merged and pushed. Argo CD reads
-remote `main`, so feature branches are review artifacts rather than deployment
-sources. The command is idempotent and stops at the first unhealthy phase:
+Lệnh này sẽ:
 
-```text
-prerequisites and Argo CD
-  -> operators
-  -> core infrastructure (PostgreSQL, Redis, Elasticsearch)
-  -> PostgreSQL database initialization
-  -> dependent platform (Kafka/Connect, Keycloak, pgAdmin)
-  -> Debezium connectors
-  -> shared dev/staging configuration
-  -> dev/staging workloads
-  -> Istio routing policies
-```
+1. Cài hoặc kiểm tra Argo CD và Istio.
+2. Apply operator Applications.
+3. Deploy infrastructure core như PostgreSQL, Redis, Elasticsearch.
+4. Chạy job khởi tạo database.
+5. Deploy Kafka, Kafka Connect, Keycloak và pgAdmin.
+6. Deploy Debezium connectors.
+7. Tạo configuration/secrets cho `dev` và `staging`.
+8. Deploy workloads của cả hai môi trường.
+9. Apply Istio routing.
+10. Ghi bootstrap report local và trong cluster.
 
-The timeout for each gate defaults to 15 minutes. Override it with `BOOTSTRAP_TIMEOUT=30m`. When prerequisites are already installed, use `SKIP_PREREQUISITES=true ./scripts/bootstrap.sh`.
-
-For a demo or partial recovery, workload failures can be made non-blocking:
+Mặc định mỗi gate có timeout 15 phút. Có thể đổi timeout:
 
 ```bash
-BOOTSTRAP_MODE=best-effort BOOTSTRAP_TIMEOUT=5m ./scripts/bootstrap.sh
+BOOTSTRAP_TIMEOUT=30m ./scripts/bootstrap.sh
 ```
 
-In `best-effort` mode, phase 5 waits for workload applications concurrently,
-reports every application that is not `Synced` and `Healthy`, and still applies
-phase 6 routing. Healthy services remain available while Argo CD continues to
-reconcile failed services. Phases 1-4 remain fail-fast because they provide the
-shared database, messaging, identity, and configuration dependencies. The
-default mode is `strict` and preserves the normal production bootstrap gate.
-
-Every run now leaves a local and in-cluster status report. To list unhealthy
-Applications, inspect a single microservice, or recover it after committing a
-fix:
+Nếu Argo CD và Istio đã được cài sẵn, có thể bỏ qua prerequisite:
 
 ```bash
-bash ./scripts/bootstrap-status.sh
-bash ./scripts/bootstrap-status.sh product-dev
-bash ./scripts/recover-application.sh product-dev
+SKIP_PREREQUISITES=true ./scripts/bootstrap.sh
 ```
 
-See [Bootstrap operation, degraded deployment, and recovery](BOOTSTRAP_OPERATIONS.md)
-for the complete phase policy, report format, failure interpretation, and
-repair workflow.
-
-If GHCR packages are private, provide credentials to the same command; the
-script creates pull secrets after namespaces exist and before workloads start:
+Nếu GHCR package đang private, truyền credential để script tạo pull secret trong namespace `dev` và `staging`:
 
 ```bash
-GHCR_USERNAME=<user> GHCR_TOKEN=<read-packages-token> ./scripts/bootstrap.sh
+GHCR_USERNAME='<github-user>' \
+GHCR_TOKEN='<token-có-quyền-read-packages>' \
+./scripts/bootstrap.sh
 ```
 
-Infrastructure gating checks both Argo CD health and runtime readiness.
-PostgreSQL, Redis, Elasticsearch, and Kibana must report ready before
-database initialization. Kafka and its Debezium connectors are intentionally
-deployed afterward because they consume the newly-created product databases.
-Keycloak, pgAdmin, and Kafka must then become ready before shared application
-configuration and workloads are enabled.
-
-Do not use `kubectl apply -f bootstrap/root.yaml` for a new deployment. That legacy manifest starts all roots concurrently and bypasses readiness gates.
-
-If the legacy roots are already installed, migrate them in the same command:
+Nếu cluster đang có legacy Argo CD root Applications cũ, migrate sang phased bootstrap:
 
 ```bash
 MIGRATE_LEGACY_ROOTS=true ./scripts/bootstrap.sh
 ```
 
-This deletes the old Argo CD parent and child `Application` objects with orphan propagation, preserving their Kubernetes workloads. The phased roots then adopt the desired state in order. Without this flag, bootstrap refuses to continue while a legacy root exists.
+Lệnh này xóa các Application controller cũ bằng orphan propagation, giữ lại workload Kubernetes hiện có, sau đó phased bootstrap sẽ adopt desired state mới.
 
-Sau bootstrap, kiểm tra:
+## Chế độ best-effort
+
+Mặc định bootstrap chạy `strict`: gặp phase lỗi thì dừng. Khi cần demo hoặc muốn hệ thống lên được một phần, dùng `best-effort`:
+
+```bash
+BOOTSTRAP_MODE=best-effort BOOTSTRAP_TIMEOUT=5m ./scripts/bootstrap.sh
+```
+
+Trong mode này, phase infrastructure vẫn fail-fast. Riêng workload và routing có thể tiếp tục nếu một vài service chưa Healthy. Argo CD vẫn giữ automated sync và sẽ tiếp tục reconcile.
+
+Chi tiết xem [Bootstrap operations](BOOTSTRAP_OPERATIONS.md).
+
+## Kiểm tra sau bootstrap
+
+Kiểm tra Argo CD Applications:
 
 ```bash
 kubectl get applications -n argocd
+```
+
+Kiểm tra namespace và pod:
+
+```bash
 kubectl get ns
+kubectl get pods -n infra
 kubectl get pods -n dev
 kubectl get pods -n staging
 ```
 
-## Multi-source và image tag
+Kiểm tra routing:
 
-Mỗi service app trong `applications/dev/services.yaml` và `applications/staging/services.yaml` lấy chart từ `yas-helm`, đồng thời lấy value file từ repo này.
+```bash
+kubectl get gateway,virtualservice,destinationrule -A
+kubectl get service istio-ingressgateway -n istio-system -o wide
+```
 
-Trích từ file `applications/dev/services.yaml`:
+Kiểm tra bootstrap report:
+
+```bash
+bash ./scripts/bootstrap-status.sh
+kubectl get configmap yas-bootstrap-last-report -n argocd \
+  -o jsonpath='{.data.report}'
+```
+
+Kiểm tra một Application cụ thể:
+
+```bash
+bash ./scripts/bootstrap-status.sh product-dev
+```
+
+Recover một Application sau khi đã fix Git:
+
+```bash
+BOOTSTRAP_TIMEOUT=10m bash ./scripts/recover-application.sh product-dev
+```
+
+## Kiểm tra networking
+
+Sau khi thêm node, join lại k3s, đổi Tailscale IP, hoặc nghi ngờ lỗi routing, chạy:
+
+```bash
+bash ./scripts/check-cluster-networking.sh
+```
+
+Script này kiểm tra node readiness, CoreDNS, traffic Pod-to-Service, Pod-to-Pod, egress tùy chọn, IP ingress của Istio và mapping trong `hostnames.txt`.
+
+## Dev và staging
+
+Hai môi trường `dev` và `staging` dùng chung infrastructure trong namespace `infra`, nhưng workload chạy trong namespace riêng:
+
+```text
+dev
+staging
+```
+
+Mỗi service trong Argo CD lấy chart từ `yas-helm`, và lấy values từ repo này bằng multi-source.
+
+Ví dụ service `cart` trong dev:
 
 ```yaml
 sources:
   - repoURL: 'https://github.com/23120049/yas-helm.git'
+    targetRevision: main
     path: charts/cart
     helm:
       valueFiles:
         - $values/values/dev/dynamic-tags/cart.yaml
   - repoURL: 'https://github.com/23120049/yas-gitops.git'
+    targetRevision: main
     ref: values
 ```
 
-Trích từ file `values/dev/dynamic-tags/cart.yaml`:
+File tag tương ứng:
 
 ```yaml
 backend:
   image:
     repository: ghcr.io/23120049/yas-cart
-    tag: latest
+    tag: <image-tag>
 ```
 
-Workflow trong `yas` sẽ cập nhật field `backend.image.tag` hoặc `ui.image.tag` trong file per-service này.
+UI services như `storefront` và `backoffice` dùng key `ui.image.tag`; backend services dùng `backend.image.tag`.
 
-## GitHub Actions secrets
+## CD image tag flow
 
-Trong repo `yas`, cần cấu hình:
+CD workflow nằm trong repo `yas`.
 
-- `GITOPS_TOKEN`: token có quyền push vào repo `23120049/yas-gitops`.
-- `SONAR_TOKEN`: nếu vẫn chạy SonarCloud.
-- `SNYK_TOKEN`: nếu vẫn chạy Snyk.
-
-GitHub Actions mặc định dùng `GITHUB_TOKEN` để push image lên GHCR trong cùng account. Nếu package GHCR bị private, cluster cần pull secret tương ứng.
-
-## Release flow cho staging
-
-Ý tưởng staging hiện tại theo yêu cầu của bạn:
-
-1. CI trên `main` build và push image với 2 tag: `latest` và `${{ github.sha }}`.
-2. Khi bạn tạo GitHub Release trên UI, workflow deploy không dùng release tag làm Docker tag.
-3. Workflow cập nhật toàn bộ staging image tag thành `latest`.
-4. Argo CD sync staging và kéo image `latest` mới nhất.
-
-Lưu ý: cách này dễ vận hành nhưng staging không immutable tuyệt đối vì `latest` có thể đổi nội dung. Nếu cần audit/reproduce chặt hơn, staging nên dùng release tag hoặc commit SHA.
-
-## Developer test và rollback
-
-Deploy test một service vào `dev`:
+Với dev:
 
 ```text
-GitHub Actions -> DEPLOYMENT-test.yaml -> Run workflow
+push vào yas/main
+-> CI build image và push GHCR với tag commit SHA + latest
+-> CD cập nhật values/dev/dynamic-tags/<service>.yaml bằng commit SHA
+-> push vào yas-gitops
+-> Argo CD sync dev
 ```
 
-Input cần chọn:
+Khi root `pom.xml` thay đổi, CD xem tất cả service bị ảnh hưởng và cập nhật tag dev cho tất cả service sau khi image mới đã tồn tại trên GHCR.
 
-- `service`: tên service, ví dụ `cart`.
-- `image_tag`: tag muốn test, ví dụ commit SHA.
+Với staging:
+
+```text
+publish GitHub Release trong repo yas
+-> release tag có dạng <service>-<version>
+-> CD xác định service từ release tag
+-> tag image latest trên GHCR bằng release tag
+-> cập nhật values/staging/dynamic-tags/<service>.yaml bằng release tag
+-> push vào yas-gitops
+-> Argo CD sync staging
+```
+
+Ví dụ release tag:
+
+```text
+storefront-0.1.2
+payment-paypal-0.1.2
+```
+
+Staging không ghi `latest` vào GitOps; GitOps lưu release tag cụ thể.
+
+## Developer test deploy và rollback
+
+Developer test deploy được chạy thủ công trong repo `yas`:
+
+```text
+GitHub Actions -> Developer Build & Test Deploy -> Run workflow
+```
+
+Input:
+
+- `service`: service cần deploy.
+- `image_tag`: image tag hoặc branch name.
+
+Nếu input là branch, workflow resolve thành commit SHA. Trước khi ghi tag mới vào dev values, workflow backup tag hiện tại của service đó vào `rollback_state.yaml`.
 
 Rollback dev:
 
 ```text
-GitHub Actions -> ROLLBACK.yaml -> Run workflow
+GitHub Actions -> Rollback Dev Environment -> Run workflow
 ```
 
-Script update tag nằm ở file `yas/.github/scripts/update-gitops-image-tag.sh`. Script rollback nằm ở file `yas/.github/scripts/rollback-gitops-image-tags.sh`.
+Rollback yêu cầu chọn service từ dropdown. Workflow đọc tag cũ của service đó trong `rollback_state.yaml` và ghi lại vào dev values. Rollback chỉ ảnh hưởng đúng service được chọn.
 
-## Keycloak redirect URI
+## Secrets cần cấu hình trong repo yas
 
-Keycloak vẫn dùng chung infrastructure, nhưng redirect URI phải biết cả dev và staging host.
+Repo `yas` cần các secrets sau để CI/CD hoạt động:
 
-Trích từ file `yas-helm/deploy/keycloak/keycloak/values.yaml`:
+- `GITOPS_TOKEN`: PAT có quyền checkout và push vào `23120049/yas-gitops`.
+- `SONAR_TOKEN`: dùng cho SonarCloud nếu bật workflow scan.
+- `SNYK_TOKEN`: dùng cho Snyk nếu bật workflow scan.
 
-```yaml
-backofficeRedirectUrls:
-  - http://dev-backoffice.yas.local.com
-  - http://staging-backoffice.yas.local.com
-storefrontRedirectUrls:
-  - http://dev-storefront.yas.local.com
-  - http://staging-storefront.yas.local.com
-apiRedirectUrls:
-  - http://dev-api.yas.local.com
-  - http://staging-api.yas.local.com
-```
+`GITOPS_TOKEN` thường là PAT tạo từ GitHub account có quyền write vào `yas-gitops`, sau đó lưu trong repo `yas` ở Settings -> Secrets and variables -> Actions.
 
-## Istio
+## Các lệnh vận hành nhanh
 
-Istio được quản lý qua GitOps:
-
-- `istio/dev`: policy cho namespace `dev`.
-- `istio/staging`: policy cho namespace `staging`.
-
-Bạn có thể dùng chung control plane Istio cho cả hai môi trường. Phần cần tách là namespace, workload selector, AuthorizationPolicy và VirtualService/DestinationRule theo service host nội bộ của từng namespace.
-
-Kiểm tra nhanh:
+Xem tất cả Applications:
 
 ```bash
-kubectl get peerauthentication -A
-kubectl get authorizationpolicy -A
-kubectl get virtualservice -A
-kubectl get destinationrule -A
+kubectl get applications -n argocd
 ```
 
-## Thứ tự chạy đề xuất
+Refresh/sync bằng Argo CD UI nếu cần:
 
-1. Push toàn bộ thay đổi trong `yas-helm`, `yas-gitops`, `yas`.
-2. Cấu hình secrets trong repo `yas`.
-3. Đảm bảo GHCR package của `23120049` có thể pull từ cluster.
-4. Cập nhật hosts file theo block ở trên.
-5. Cài Argo CD vào k3s.
-6. Add repo credentials cho `yas-gitops` và `yas-helm` trong Argo CD nếu repo private.
-7. Chạy `./scripts/bootstrap.sh` trong repo `yas-gitops`.
-8. Để script kiểm tra từng readiness gate; sửa phase bị lỗi rồi chạy lại cùng command.
-9. Push một thay đổi nhỏ vào service trên `yas/main` để kiểm tra dev auto deploy.
-10. Tạo GitHub Release trên repo `yas` để kiểm tra staging promotion.
+```text
+Argo CD UI -> Application -> Refresh / Sync
+```
 
-## Kiểm tra sau khi deploy
+Xem event lỗi theo namespace:
 
 ```bash
-kubectl get pods -n postgres
-kubectl get pods -n keycloak
-kubectl get pods -n dev
-kubectl get pods -n staging
-kubectl get ingress -A
+kubectl get events -n dev --sort-by=.lastTimestamp
+kubectl get events -n staging --sort-by=.lastTimestamp
+kubectl get events -n infra --sort-by=.lastTimestamp
 ```
 
-Kiểm tra URL:
+Xem pod lỗi:
 
-- `http://dev-storefront.yas.local.com`
-- `http://dev-backoffice.yas.local.com`
-- `http://dev-api.yas.local.com/swagger-ui`
-- `http://staging-storefront.yas.local.com`
-- `http://staging-backoffice.yas.local.com`
-- `http://staging-api.yas.local.com/swagger-ui`
-- `http://identity.yas.local.com`
-- `http://kibana.yas.local.com`
+```bash
+kubectl describe pod <pod-name> -n <namespace>
+kubectl logs <pod-name> -n <namespace>
+```
 
-## Ghi chú còn cần xác minh trên cluster
+Kiểm tra image đang chạy:
 
-Các phần dưới đây không thể xác minh chỉ bằng file local, cần chạy trên cluster/GitHub:
+```bash
+kubectl get pods -n dev -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.containers[*].image}{"\n"}{end}'
+kubectl get pods -n staging -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.containers[*].image}{"\n"}{end}'
+```
 
-- GitHub Actions có quyền push GHCR và push vào `yas-gitops`.
-- Argo CD multi-source hoạt động với version Argo CD đang cài.
-- Cluster có pull secret nếu GHCR package private.
-- Ingress controller route đúng qua IP Tailscale.
-- Istio CRD đã được cài trước khi sync `istio/dev` và `istio/staging`.
-- Keycloak CRD đã được cài trước khi sync chart Keycloak.
+## Thứ tự nộp/chạy để demo
+
+1. Đảm bảo `yas`, `yas-helm`, `yas-gitops` đã merge và push lên `main`.
+2. Kiểm tra secrets trong repo `yas`, đặc biệt `GITOPS_TOKEN`.
+3. Kiểm tra cluster bằng `kubectl cluster-info`.
+4. Chạy `./scripts/bootstrap.sh` trong repo `yas-gitops`.
+5. Kiểm tra `kubectl get applications -n argocd`.
+6. Cập nhật hosts file theo `hostnames.txt`.
+7. Mở các URL dev/staging để test UI và API.
+8. Push thay đổi nhỏ vào `yas/main` để test dev CD.
+9. Tạo GitHub Release dạng `<service>-<version>` để test staging CD.

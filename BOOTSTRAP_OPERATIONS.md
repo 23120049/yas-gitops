@@ -1,178 +1,204 @@
-# Bootstrap operation, degraded deployment, and recovery
+# Bootstrap operations
 
-## Goals
+Tài liệu này mô tả cách vận hành `./scripts/bootstrap.sh`, cách đọc report, cách chạy best-effort và cách recover một Argo CD Application sau khi sửa lỗi.
 
-The bootstrap has two operating modes:
+## Bootstrap modes
 
-- `strict` (default) stops at the first failed readiness gate. Use it for a
-  normal production deployment.
-- `best-effort` keeps phases 1-4 strict, but treats workload and routing
-  failures as degraded results. Use it when a partially working environment is
-  more useful than no environment, for example during a demo.
+Bootstrap có hai mode:
 
-Best effort does not delete, disable, or permanently skip an application. The
-Argo CD `Application` remains installed with automated sync and self-healing,
-so Argo CD continues retrying it after the bootstrap process has moved on.
+- `strict`: mode mặc định. Script dừng ngay khi một phase bắt buộc không đạt trạng thái `Synced` và `Healthy`.
+- `best-effort`: các phase infrastructure vẫn bắt buộc, nhưng workload và routing có thể tiếp tục nếu một vài Application chưa Healthy. Mode này phù hợp khi cần demo hoặc cần một môi trường chạy được một phần.
 
-## Execution order and failure policy
+Chạy strict:
 
-| Runtime phase | Content | Policy |
-| --- | --- | --- |
-| `00-prerequisites` | Argo CD, Istio, ingress address | Always blocking |
-| `01-operators` | PostgreSQL, Strimzi, ECK, Keycloak operators | Always blocking |
-| `02-infrastructure` | PostgreSQL, Redis, Elasticsearch/Kibana | Always blocking |
-| `03-initialization` | Database creation and credentials | Always blocking |
-| `04-platform` | Kafka, Kafka Connect, Keycloak, pgAdmin | Always blocking |
-| `03-connectors` | Debezium connectors | Always blocking |
-| `04-configuration` | Namespaces, application config and secrets | Always blocking |
-| `05-workloads` | Dev and staging microservices/UIs | Non-blocking only in best effort |
-| `06-routing` | Istio gateway and routes | Non-blocking only in best effort |
+```bash
+./scripts/bootstrap.sh
+```
 
-The file names preserve the repository's existing phase names. At runtime the
-platform must precede connectors, which is why `03-connectors` appears after
-`04-platform`.
-
-Observability Applications currently exist under `infra/`, but no active
-bootstrap phase includes them. Therefore Loki, Tempo, Prometheus, Promtail,
-Grafana Operator, and OpenTelemetry cannot block the active bootstrap. If they
-are installed separately, they are still displayed by the status tool because
-it reads every Argo CD Application.
-
-## Running a partial/degraded bootstrap
+Chạy best-effort:
 
 ```bash
 BOOTSTRAP_MODE=best-effort BOOTSTRAP_TIMEOUT=5m ./scripts/bootstrap.sh
 ```
 
-All phase 5 child Application names are discovered directly from
-`applications/dev/services.yaml` and `applications/staging/services.yaml`.
-Adding a service there automatically adds it to bootstrap readiness tracking;
-there is no second hard-coded service list to update.
+## Phase order
 
-Workload waits run concurrently. Several failed services therefore consume
-roughly one timeout window instead of one timeout per failed service.
+| Runtime phase | Nội dung | Chính sách lỗi |
+| --- | --- | --- |
+| `00-prerequisites` | Argo CD, Istio, ingress address | Blocking |
+| `01-operators` | PostgreSQL, Strimzi, ECK, Keycloak operators | Blocking |
+| `02-infrastructure` | PostgreSQL, Redis, Elasticsearch/Kibana | Blocking |
+| `03-initialization` | Database creation and credentials | Blocking |
+| `04-platform` | Kafka, Kafka Connect, Keycloak, pgAdmin | Blocking |
+| `03-connectors` | Debezium connectors | Blocking |
+| `04-configuration` | Namespaces, application config and secrets | Blocking |
+| `05-workloads` | Dev and staging microservices/UIs | Non-blocking only in best-effort |
+| `06-routing` | Istio gateway and routes | Non-blocking only in best-effort |
 
-Possible final outcomes are:
+Tên file giữ theo cấu trúc repository hiện tại. Khi runtime, platform phải chạy trước connectors, nên `03-connectors` được apply sau `04-platform`.
 
-- `SUCCESS`: every checked component became `Synced` and `Healthy`.
-- `DEGRADED`: bootstrap reached the end, but at least one best-effort
-  Application timed out or was unhealthy.
-- `FAILED`: a required phase/gate failed, or bootstrap terminated unexpectedly.
+Observability Applications có trong `infra/`, nhưng không nằm trong active bootstrap phase. Nếu cần cài observability, sync riêng các Application đó qua Argo CD.
+
+## Timeout
+
+Mặc định mỗi gate đợi tối đa 15 phút:
+
+```bash
+./scripts/bootstrap.sh
+```
+
+Đổi timeout:
+
+```bash
+BOOTSTRAP_TIMEOUT=30m ./scripts/bootstrap.sh
+```
+
+Timeout không có nghĩa service chắc chắn hỏng vĩnh viễn. Nó chỉ có nghĩa là service chưa đạt trạng thái sẵn sàng trong khoảng thời gian đã cấu hình.
+
+## Private GHCR packages
+
+Nếu GHCR packages private, truyền credential khi bootstrap:
+
+```bash
+GHCR_USERNAME='<github-user>' \
+GHCR_TOKEN='<read-packages-token>' \
+./scripts/bootstrap.sh
+```
+
+Script sẽ tạo docker-registry secret `ghcr-pull` trong namespace `dev` và `staging`, sau đó patch default ServiceAccount để workloads pull image được.
+
+Nếu quên cấu hình credential, lỗi thường gặp ở phase workload là `ImagePullBackOff`.
+
+## Migration từ legacy roots
+
+Nếu cluster đã có các root Applications cũ, bootstrap sẽ dừng để tránh chạy song song hai cơ chế điều khiển.
+
+Chạy migration:
+
+```bash
+MIGRATE_LEGACY_ROOTS=true ./scripts/bootstrap.sh
+```
+
+Lệnh này xóa các Argo CD Application controller cũ với orphan propagation, giữ lại Kubernetes workloads hiện có. Sau đó phased bootstrap sẽ apply desired state mới theo đúng thứ tự.
 
 ## Deployment reports
 
-Every run writes a timestamped report:
+Mỗi lần bootstrap tạo report local:
 
 ```text
 .bootstrap-reports/bootstrap-<UTC timestamp>.log
 ```
 
-The report records the phase, component, result, detail, final outcome, and a
-snapshot of every Argo CD Application. It is written even when `set -e` stops
-the script. Reports are ignored by Git.
+Report ghi:
 
-When the `argocd` namespace is reachable, the latest report is also persisted
-in the cluster:
+- phase đang chạy;
+- component/Application;
+- kết quả;
+- chi tiết lỗi nếu có;
+- snapshot Argo CD Applications cuối run.
+
+Nếu namespace `argocd` truy cập được, report mới nhất cũng được lưu trong cluster:
 
 ```bash
 kubectl get configmap yas-bootstrap-last-report -n argocd \
   -o jsonpath='{.data.report}'
 ```
 
-Use this for a quick current summary:
+Xem summary nhanh:
 
 ```bash
 bash ./scripts/bootstrap-status.sh
 ```
 
-Inspect one failed service, including Argo CD conditions, pods, and recent
-warning events:
+Xem một Application:
 
 ```bash
 bash ./scripts/bootstrap-status.sh product-dev
 ```
 
-An Application reported as `CONTINUED` was not removed. It means the
-best-effort bootstrap stopped waiting for it and continued to the next phase.
+Application có kết quả `CONTINUED` trong best-effort mode không bị xóa hay bị tắt. Điều đó chỉ có nghĩa bootstrap đã ngừng đợi Application đó và tiếp tục phase sau. Argo CD vẫn tiếp tục reconcile ở background.
 
-## Repairing a continued or failed service
+## Recover một Application
 
-1. Inspect it:
+Quy trình recover:
+
+1. Inspect Application:
 
    ```bash
    bash ./scripts/bootstrap-status.sh product-dev
    ```
 
-2. Fix the source of truth. Common fixes are:
+2. Sửa source of truth trong Git. Ví dụ:
 
-   - publish or correct the container image/tag in `yas`;
-   - correct chart templates/defaults in `yas-helm`;
-   - correct the Application values or revision in `yas-gitops`;
-   - restore a missing Secret, credential, dependency, or cluster capacity.
+   - sửa image tag trong `yas-gitops`;
+   - publish lại image trong `yas`;
+   - sửa Helm chart trong `yas-helm`;
+   - sửa Secret, config, dependency hoặc resource request.
 
-3. Commit and push the fix to the revision used by the Application (normally
-   `main`). Local-only changes are invisible to Argo CD.
+3. Commit và push thay đổi lên branch/revision mà Application đang đọc, thông thường là `main`.
 
-4. Request a hard refresh and wait only for that component:
+4. Recover Application:
 
    ```bash
    BOOTSTRAP_TIMEOUT=10m bash ./scripts/recover-application.sh product-dev
    ```
 
-The recovery script does not rerun database initialization or other bootstrap
-phases. Automated sync/self-heal performs the deployment; the script verifies
-that the selected Application reaches both `Synced` and `Healthy`. It also
-annotates that Application with the time and result of the latest explicit
-recovery attempt; `bootstrap-status.sh <application>` displays those values.
+Script recovery không chạy lại toàn bộ bootstrap. Nó yêu cầu Argo CD hard refresh Application được chọn, sau đó đợi Application đạt `Synced` và `Healthy`.
 
-If the failed item is a bootstrap parent such as `yas-bootstrap-workloads`,
-first inspect its child Applications. Recover the unhealthy children, then
-recover the parent. Rerunning the complete bootstrap is safe and idempotent but
-normally unnecessary.
+Nếu parent Application như `yas-bootstrap-workloads` lỗi, hãy inspect các child Applications trước. Recover child Applications bị lỗi, sau đó recover parent nếu cần.
 
-## Diagnostic interpretation
+## Đọc trạng thái Argo CD
 
-| Argo CD state | Meaning | Typical action |
+| Trạng thái | Ý nghĩa | Hướng xử lý |
 | --- | --- | --- |
-| `OutOfSync` | Desired and live resources differ | Inspect sync/render errors; refresh after fixing Git |
-| `Synced/Progressing` | Resources applied but are not ready | Inspect pods, probes, dependencies, and events |
-| `Synced/Degraded` | A managed resource reports failure | Inspect rollout, pod logs, image pulls, and health probes |
-| Application missing | Parent did not create it or source rendering failed | Inspect the parent Application and repository revision |
-| `Unknown` | Argo CD cannot calculate health or load desired state | Inspect repository access and Application conditions |
+| `OutOfSync` | Desired state và live state khác nhau | Xem sync/render error, sửa Git rồi refresh |
+| `Synced/Progressing` | Resource đã apply nhưng chưa ready | Xem pod, probe, dependency và events |
+| `Synced/Degraded` | Resource báo lỗi | Xem rollout, pod logs, image pull và health probe |
+| Application missing | Parent chưa tạo app hoặc render source lỗi | Xem parent Application và repo revision |
+| `Unknown` | Argo CD không đọc được health/source | Xem repo access và Application conditions |
 
-Do not manually patch a Git-managed Deployment as a lasting fix: self-heal may
-revert it. Emergency changes should be followed by the equivalent Git change.
+Không nên patch trực tiếp Deployment do Git quản lý để làm fix lâu dài. Argo CD self-heal có thể revert manual change. Nếu bắt buộc sửa tạm trên cluster, cần commit thay đổi tương đương vào Git sau đó.
 
-## Known limits
+## Useful commands
 
-- A timeout is not proof that a service is permanently broken; it only records
-  that readiness was not reached within the configured window.
-- Phase 1-4 remain blocking because workloads share their database, identity,
-  messaging, and configuration dependencies. Continuing past those failures
-  would mark many downstream services degraded without producing a useful
-  environment.
-- The report ConfigMap stores only the latest run. Timestamped local reports
-  retain earlier runs on the machine that executed bootstrap.
+Tất cả Applications:
 
-## Audit findings and operational risks
+```bash
+kubectl get applications -n argocd
+```
 
-- Bootstrap manifests point to remote `main`. A locally edited manifest is not
-  deployed until it is committed and pushed. The branch guard reduces, but
-  cannot eliminate, the risk of local `main` being ahead of or behind remote.
-- Argo CD installation currently uses the mutable upstream `stable` manifest.
-  A future bootstrap can therefore install a different Argo CD release. Pin an
-  approved Argo CD version before treating bootstrap as reproducible.
-- `install-prerequisites.sh` reads only
-  `.status.loadBalancer.ingress[0].ip`. Environments that expose a hostname
-  instead of an IP need a corresponding hostname-aware check.
-- Each workload Application uses automated prune and self-heal. Fixes must be
-  made in Git; lasting manual cluster edits will be reconciled away.
-- The database initialization Job is safe to wait on when already complete,
-  but changing immutable Job fields later may require a deliberate Job
-  replacement before Argo CD can sync the new definition.
-- Private GHCR images require `GHCR_USERNAME` and `GHCR_TOKEN` during bootstrap,
-  or an equivalent pre-existing pull secret. Missing credentials commonly
-  appear as `ImagePullBackOff` during phase 5.
-- The status report reflects Kubernetes/Argo CD health, not an end-to-end
-  business transaction. Run smoke tests for the exact demo flow after a
-  degraded bootstrap.
+Pods theo namespace:
+
+```bash
+kubectl get pods -n infra
+kubectl get pods -n dev
+kubectl get pods -n staging
+```
+
+Events:
+
+```bash
+kubectl get events -n infra --sort-by=.lastTimestamp
+kubectl get events -n dev --sort-by=.lastTimestamp
+kubectl get events -n staging --sort-by=.lastTimestamp
+```
+
+Describe và logs:
+
+```bash
+kubectl describe pod <pod-name> -n <namespace>
+kubectl logs <pod-name> -n <namespace>
+```
+
+Istio routing:
+
+```bash
+kubectl get gateway,virtualservice,destinationrule -A
+kubectl get service istio-ingressgateway -n istio-system -o wide
+```
+
+Cluster networking check:
+
+```bash
+bash ./scripts/check-cluster-networking.sh
+```
