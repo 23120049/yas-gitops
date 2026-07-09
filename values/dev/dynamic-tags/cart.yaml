@@ -1,7 +1,7 @@
 backend:
   image:
     repository: ghcr.io/23120049/yas-cart
-    tag: 2aea1e4950fa4a3bae658a5b1b548470ed277a67
+    tag: ca2eb1a715e0b8df8b2ec4a6cf91f8a6b3e7c9d4
   serviceMonitor:
     enabled: true
   podAnnotations:
