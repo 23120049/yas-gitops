@@ -1,4 +1,4 @@
 ui:
   image:
     repository: ghcr.io/23120049/yas-backoffice
-    tag: latest
+    tag: 8765949c68e047673068feb68ef979154fff388e
