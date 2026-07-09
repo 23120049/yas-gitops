@@ -5,67 +5,67 @@ backend:
   cart:
     image:
       repository: ghcr.io/23120049/yas-cart
-      tag: 943a6f8cd62782303e5c7a646c2c2ba613ddc422
+      tag: 062e849581a9f9fcf1918c74883fc176fb33d33a
   customer:
     image:
       repository: ghcr.io/23120049/yas-customer
-      tag: 8c70ebb6eef1ac88a50c069b0dadc803bb846ddf
+      tag: latest
   inventory:
     image:
       repository: ghcr.io/23120049/yas-inventory
-      tag: 8c70ebb6eef1ac88a50c069b0dadc803bb846ddf
+      tag: latest
   location:
     image:
       repository: ghcr.io/23120049/yas-location
-      tag: 8c70ebb6eef1ac88a50c069b0dadc803bb846ddf
+      tag: latest
   media:
     image:
       repository: ghcr.io/23120049/yas-media
-      tag: 8c70ebb6eef1ac88a50c069b0dadc803bb846ddf
+      tag: a6bf5759de72bd9dee5f74a3d81ec038ba872cfe
   order:
     image:
       repository: ghcr.io/23120049/yas-order
-      tag: 8c70ebb6eef1ac88a50c069b0dadc803bb846ddf
+      tag: latest
   payment:
     image:
       repository: ghcr.io/23120049/yas-payment
-      tag: 8c70ebb6eef1ac88a50c069b0dadc803bb846ddf
+      tag: latest
   payment-paypal:
     image:
       repository: ghcr.io/23120049/yas-payment-paypal
-      tag: 8c70ebb6eef1ac88a50c069b0dadc803bb846ddf
+      tag: latest
   product:
     image:
       repository: ghcr.io/23120049/yas-product
-      tag: 8c70ebb6eef1ac88a50c069b0dadc803bb846ddf
+      tag: latest
   promotion:
     image:
       repository: ghcr.io/23120049/yas-promotion
-      tag: 8c70ebb6eef1ac88a50c069b0dadc803bb846ddf
+      tag: latest
   rating:
     image:
       repository: ghcr.io/23120049/yas-rating
-      tag: 8c70ebb6eef1ac88a50c069b0dadc803bb846ddf
+      tag: latest
   recommendation:
     image:
       repository: ghcr.io/23120049/yas-recommendation
-      tag: 8c70ebb6eef1ac88a50c069b0dadc803bb846ddf
+      tag: latest
   sampledata:
     image:
       repository: ghcr.io/23120049/yas-sampledata
-      tag: 8c70ebb6eef1ac88a50c069b0dadc803bb846ddf
+      tag: latest
   search:
     image:
       repository: ghcr.io/23120049/yas-search
-      tag: a4b7e29481da8027250f7e603c9d65bbe531c45f
+      tag: latest
   storefront-bff:
     image:
       repository: ghcr.io/23120049/yas-storefront-bff
-      tag: 8765949c68e047673068feb68ef979154fff388e
+      tag: 12ad2a50be80eff0cc71860eb27ba4a76313a991
   backoffice-bff:
     image:
       repository: ghcr.io/23120049/yas-backoffice-bff
-      tag: 8765949c68e047673068feb68ef979154fff388e
+      tag: 12ad2a50be80eff0cc71860eb27ba4a76313a991
   tax:
     image:
       repository: ghcr.io/23120049/yas-tax
@@ -73,13 +73,13 @@ backend:
   webhook:
     image:
       repository: ghcr.io/23120049/yas-webhook
-      tag: 8c70ebb6eef1ac88a50c069b0dadc803bb846ddf
+      tag: latest
 ui:
   storefront:
     image:
       repository: ghcr.io/23120049/yas-storefront
-      tag: 096f73968e25520faccaf4edf2109469810d0ad7
+      tag: f08d240790b6a103acb32a2a9a532145d38e97f0
   backoffice:
     image:
       repository: ghcr.io/23120049/yas-backoffice
-      tag: 8765949c68e047673068feb68ef979154fff388e
+      tag: 12ad2a50be80eff0cc71860eb27ba4a76313a991

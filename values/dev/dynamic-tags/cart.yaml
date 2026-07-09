@@ -1,7 +1,7 @@
 backend:
   image:
     repository: ghcr.io/23120049/yas-cart
-    tag: 7520242be8816bda947c0fc64ebfec693ab70668
+    tag: 062e849581a9f9fcf1918c74883fc176fb33d33a
   serviceMonitor:
     enabled: true
   podAnnotations:
@@ -14,7 +14,6 @@ backend:
     httpGet:
       path: /actuator/health/readiness
       port: metric
-
 cartApplicationConfig:
   management:
     otlp:

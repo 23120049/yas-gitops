@@ -1,4 +1,4 @@
 backend:
   image:
     repository: ghcr.io/23120049/yas-search
-    tag: a4b7e29481da8027250f7e603c9d65bbe531c45f
+    tag: latest
