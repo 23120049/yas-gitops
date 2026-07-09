@@ -1,7 +1,7 @@
 backend:
   image:
     repository: ghcr.io/23120049/yas-cart
-    tag: 7520242be8816bda947c0fc64ebfec693ab70668
+    tag: latest
   serviceMonitor:
     enabled: true
   livenessProbe:
@@ -12,7 +12,6 @@ backend:
     httpGet:
       path: /actuator/health/readiness
       port: metric
-
 cartApplicationConfig:
   management:
     otlp:
