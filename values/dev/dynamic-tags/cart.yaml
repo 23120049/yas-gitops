@@ -18,9 +18,9 @@ cartApplicationConfig:
   management:
     otlp:
       tracing:
-        endpoint: http://10.43.1.133:4318/v1/traces
+        endpoint: http://10.43.1.133:4317
       metrics:
-        url: http://10.43.1.133:4318/v1/metrics
+        url: http://10.43.1.133:4317
     server:
       port: 8090
     health:
@@ -49,7 +49,7 @@ cartApplicationConfig:
         enabled: true
     exporter:
       otlp:
-        endpoint: http://10.43.1.133:4318
+        endpoint: http://10.43.1.133:4317
     traces:
       exporter: otlp
     metrics:
