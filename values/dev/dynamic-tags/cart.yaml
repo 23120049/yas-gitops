@@ -1,7 +1,7 @@
 backend:
   image:
     repository: ghcr.io/23120049/yas-cart
-    tag: 2aea1e4950fa4a3bae658a5b1b548470ed277a67
+    tag: ca2eb1a715e0b8df8b2ec4a6cf91f8a6b3e7c9d4
   serviceMonitor:
     enabled: true
   podAnnotations:
@@ -16,11 +16,13 @@ backend:
       port: metric
 cartApplicationConfig:
   management:
-    otlp:
-      tracing:
-        endpoint: http://10.43.1.133:4317
-      metrics:
-        url: http://10.43.1.133:4317
+    tracing:
+      sampling:
+        probability: 1.0
+    metrics:
+      export:
+        otlp:
+          enabled: false
     server:
       port: 8090
     health:
@@ -28,9 +30,6 @@ cartApplicationConfig:
         enabled: true
       livenessstate:
         enabled: true
-    tracing:
-      sampling:
-        probability: 1.0
     metrics:
       tags:
         application: ${spring.application.name}
@@ -44,15 +43,16 @@ cartApplicationConfig:
           enabled: true
         show-details: always
   otel:
+    service:
+      name: cart
     sdk:
       autoconfigure:
         enabled: true
     exporter:
       otlp:
-        endpoint: http://10.43.1.133:4317
+        endpoint: http://opentelemetry-collector-collector.observability.svc.cluster.local:4317
+        protocol: grpc
     traces:
       exporter: otlp
     metrics:
       exporter: none
-    service:
-      name: cart
