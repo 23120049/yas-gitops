@@ -18,9 +18,9 @@ cartApplicationConfig:
   management:
     otlp:
       tracing:
-        endpoint: http://opentelemetry-collector-collector.observability.svc.cluster.local:4318/v1/traces
+        endpoint: http://10.43.1.133:4318/v1/traces
       metrics:
-        url: http://opentelemetry-collector-collector.observability.svc.cluster.local:4318/v1/metrics
+        url: http://10.43.1.133:4318/v1/metrics
     server:
       port: 8090
     health:
@@ -43,3 +43,16 @@ cartApplicationConfig:
         probes:
           enabled: true
         show-details: always
+  otel:
+    sdk:
+      autoconfigure:
+        enabled: true
+    exporter:
+      otlp:
+        endpoint: http://10.43.1.133:4318
+    traces:
+      exporter: otlp
+    metrics:
+      exporter: none
+    service:
+      name: cart
