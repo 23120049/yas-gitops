@@ -5,7 +5,7 @@ backend:
   cart:
     image:
       repository: ghcr.io/23120049/yas-cart
-      tag: 062e849581a9f9fcf1918c74883fc176fb33d33a
+      tag: latest
   customer:
     image:
       repository: ghcr.io/23120049/yas-customer
@@ -21,7 +21,7 @@ backend:
   media:
     image:
       repository: ghcr.io/23120049/yas-media
-      tag: a6bf5759de72bd9dee5f74a3d81ec038ba872cfe
+      tag: latest
   order:
     image:
       repository: ghcr.io/23120049/yas-order
@@ -61,15 +61,15 @@ backend:
   storefront-bff:
     image:
       repository: ghcr.io/23120049/yas-storefront-bff
-      tag: 12ad2a50be80eff0cc71860eb27ba4a76313a991
+      tag: latest
   backoffice-bff:
     image:
       repository: ghcr.io/23120049/yas-backoffice-bff
-      tag: 12ad2a50be80eff0cc71860eb27ba4a76313a991
+      tag: latest
   tax:
     image:
       repository: ghcr.io/23120049/yas-tax
-      tag: 8c70ebb6eef1ac88a50c069b0dadc803bb846ddf
+      tag: latest
   webhook:
     image:
       repository: ghcr.io/23120049/yas-webhook
@@ -78,8 +78,8 @@ ui:
   storefront:
     image:
       repository: ghcr.io/23120049/yas-storefront
-      tag: f08d240790b6a103acb32a2a9a532145d38e97f0
+      tag: latest
   backoffice:
     image:
       repository: ghcr.io/23120049/yas-backoffice
-      tag: 12ad2a50be80eff0cc71860eb27ba4a76313a991
+      tag: latest
