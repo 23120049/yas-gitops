@@ -1,0 +1,15 @@
+# NOTE: portLevelMtls is NOT supported by Istio 1.30.x CRD.
+# This file is kept for reference. The actual fix uses a
+# DestinationRule + AuthorizationPolicy approach instead.
+# See: destinationrule-cart-metrics.yaml and authorization-policy.yaml
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: cart-metrics-permissive
+  namespace: dev
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cart
+  mtls:
+    mode: PERMISSIVE
