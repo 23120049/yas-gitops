@@ -1,0 +1,23 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: backoffice-bff-staging
+  namespace: observability
+  labels:
+    app.kubernetes.io/instance: backoffice-bff-staging
+    app.kubernetes.io/name: backoffice-bff
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: backoffice-bff-staging
+      app.kubernetes.io/name: backoffice-bff
+  namespaceSelector:
+    matchNames:
+      - staging
+  podMetricsEndpoints:
+    - port: metric
+      path: /actuator/prometheus
+      interval: 30s
+      scheme: http
+      honorLabels: true

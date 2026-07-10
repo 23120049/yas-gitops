@@ -2,3 +2,28 @@ backend:
   image:
     repository: ghcr.io/23120049/yas-storefront-bff
     tag: latest
+  serviceMonitor:
+    enabled: true
+  livenessProbe:
+    httpGet:
+      path: /actuator/health/liveness
+      port: metric
+  readinessProbe:
+    httpGet:
+      path: /actuator/health/readiness
+      port: metric
+  extraEnvs:
+    - name: MANAGEMENT_OTLP_TRACING_ENDPOINT
+      value: http://opentelemetry-collector-collector.observability.svc.cluster.local:4318/v1/traces
+    - name: MANAGEMENT_OTLP_METRICS_URL
+      value: http://opentelemetry-collector-collector.observability.svc.cluster.local:4318/v1/metrics
+    - name: OTEL_SERVICE_NAME
+      value: storefront-bff
+    - name: OTEL_EXPORTER_OTLP_ENDPOINT
+      value: http://opentelemetry-collector-collector.observability.svc.cluster.local:4317
+    - name: OTEL_EXPORTER_OTLP_PROTOCOL
+      value: grpc
+    - name: OTEL_TRACES_EXPORTER
+      value: otlp
+    - name: OTEL_SDK_AUTOCONFIGURE_ENABLED
+      value: "true"

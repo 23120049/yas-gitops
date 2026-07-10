@@ -1,0 +1,23 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: storefront-bff-dev
+  namespace: observability
+  labels:
+    app.kubernetes.io/instance: storefront-bff-dev
+    app.kubernetes.io/name: storefront-bff
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: storefront-bff-dev
+      app.kubernetes.io/name: storefront-bff
+  namespaceSelector:
+    matchNames:
+      - dev
+  podMetricsEndpoints:
+    - port: metric
+      path: /actuator/prometheus
+      interval: 30s
+      scheme: http
+      honorLabels: true
