@@ -5,7 +5,7 @@ backend:
   cart:
     image:
       repository: ghcr.io/23120049/yas-cart
-      tag: 2aea1e4950fa4a3bae658a5b1b548470ed277a67
+      tag: 53c9af5fd4693e548674c91a74c4a9cbd450612d
   customer:
     image:
       repository: ghcr.io/23120049/yas-customer
