@@ -1,0 +1,24 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-prometheus-scrape-customer
+  namespace: dev
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: customer
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals:
+              - "cluster.local/ns/observability/sa/prometheus-kube-prometheus-prometheus"
+      to:
+        - operation:
+            paths:
+              - /customer/actuator
+              - /customer/actuator/*
+              - /actuator
+              - /actuator/*
+              - /customer/prometheus
+              - /prometheus

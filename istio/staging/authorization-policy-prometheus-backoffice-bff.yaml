@@ -1,0 +1,24 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-prometheus-scrape-backoffice-bff
+  namespace: staging
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: backoffice-bff
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals:
+              - "cluster.local/ns/observability/sa/prometheus-kube-prometheus-prometheus"
+      to:
+        - operation:
+            paths:
+              - /backoffice-bff/actuator
+              - /backoffice-bff/actuator/*
+              - /actuator
+              - /actuator/*
+              - /backoffice-bff/prometheus
+              - /prometheus

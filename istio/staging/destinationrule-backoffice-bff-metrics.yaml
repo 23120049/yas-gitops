@@ -1,0 +1,13 @@
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: backoffice-bff-metrics-no-mtls
+  namespace: staging
+spec:
+  host: backoffice-bff.staging.svc.cluster.local
+  trafficPolicy:
+    portLevelSettings:
+      - port:
+          number: 8090
+        tls:
+          mode: DISABLE

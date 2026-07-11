@@ -1,0 +1,13 @@
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: customer-metrics-no-mtls
+  namespace: staging
+spec:
+  host: customer.staging.svc.cluster.local
+  trafficPolicy:
+    portLevelSettings:
+      - port:
+          number: 8090
+        tls:
+          mode: DISABLE
