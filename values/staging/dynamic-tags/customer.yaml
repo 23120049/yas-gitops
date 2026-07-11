@@ -3,7 +3,7 @@ backend:
     repository: ghcr.io/23120049/yas-customer
     tag: latest
   serviceMonitor:
-    enabled: true
+    enabled: false
   livenessProbe:
     httpGet:
       path: /actuator/health/liveness

@@ -1,9 +1,9 @@
 backend:
   image:
     repository: ghcr.io/23120049/yas-cart
-    tag: 53c9af5fd4693e548674c91a74c4a9cbd450612d
+    tag: 5e61ecab0ec3cb80b12ca91f60fe44c7b7a49478
   serviceMonitor:
-    enabled: true
+    enabled: false
   podAnnotations:
     sidecar.istio.io/inject: "true"
   livenessProbe:

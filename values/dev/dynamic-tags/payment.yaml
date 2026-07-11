@@ -3,7 +3,7 @@ backend:
     repository: ghcr.io/23120049/yas-payment
     tag: 94901f15da17cc7c37c449e8709607905f4bd0fe
   serviceMonitor:
-    enabled: true
+    enabled: false
   livenessProbe:
     httpGet:
       path: /actuator/health/liveness
